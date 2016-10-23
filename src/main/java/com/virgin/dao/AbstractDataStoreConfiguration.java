@@ -2,16 +2,17 @@ package com.virgin.dao;
 
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.DatastoreOptions;
+import com.virgin.dao.mapping.DataStoreMappingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.data.annotation.Persistent;
 import org.springframework.data.mapping.model.FieldNamingStrategy;
 import org.springframework.data.mapping.model.PropertyNameFieldNamingStrategy;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -20,7 +21,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-@Configuration
+@Component
 public abstract class AbstractDataStoreConfiguration {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDataStoreConfiguration.class);
@@ -33,15 +34,17 @@ public abstract class AbstractDataStoreConfiguration {
 
     //TODO:Move this dataStore to different class
     @Bean
-    public DefaultDataStoreEntityManager defaultDataStoreEntityManager() throws Exception {
+    public DataStoreTemplate dataStoreTemplate() throws Exception {
         LOG.info("Creating Bean for : DefaultDataStoreEntityManager");
         Datastore datastore = DatastoreOptions.defaultInstance().service();
-        return new DefaultDataStoreEntityManager(datastore, mappingDataStoreConverter());
+        return new DataStoreTemplate(datastore, mappingDataStoreConverter());
     }
 
     @Bean
     public DataStoreMappingContext dataStoreMappingContext() throws ClassNotFoundException {
         LOG.info("Creating Bean for : DataStoreMappingContext");
+        System.out.println("..........................................................................");
+        System.out.println(getInitialEntitySet());
         DataStoreMappingContext mappingContext = new DataStoreMappingContext();
         mappingContext.setInitialEntitySet(getInitialEntitySet());
 //        mappingContext.setSimpleTypeHolder(customConversions().getSimpleTypeHolder());

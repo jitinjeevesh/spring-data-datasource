@@ -1,4 +1,4 @@
-package com.virgin.dao;
+package com.virgin.dao.mapping;
 
 import org.springframework.data.mapping.PersistentProperty;
 

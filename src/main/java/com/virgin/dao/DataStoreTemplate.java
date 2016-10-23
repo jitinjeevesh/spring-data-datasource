@@ -6,16 +6,20 @@ import com.jmethods.catatumbo.impl.EntityMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DefaultDataStoreEntityManager implements DataStoreEntityManager {
+public class DataStoreTemplate implements DataStoreEntityManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DefaultDataStoreEntityManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DataStoreTemplate.class);
     private final DataStoreConverter dataStoreConverter;
     private Datastore datastore;
 
     private DatastoreReader nativeReader = null;
 
-    public DefaultDataStoreEntityManager(Datastore datastore, DataStoreConverter dataStoreConverter) {
-        LOG.info("Constructor initialized for : DefaultDataStoreEntityManager");
+    public DataStoreTemplate() {
+        this(null, null);
+    }
+
+    public DataStoreTemplate(Datastore datastore, DataStoreConverter dataStoreConverter) {
+        LOG.info("Constructor initialized for : DataStoreTemplate");
         this.datastore = datastore;
         this.nativeReader = datastore;
         this.dataStoreConverter = dataStoreConverter;

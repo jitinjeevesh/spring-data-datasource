@@ -1,5 +1,6 @@
-package com.virgin.dao;
+package com.virgin.dao.repository.support;
 
+import com.virgin.dao.DataStoreEntityManager;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
@@ -12,26 +13,15 @@ public class DataStoreRepositoryFactoryBean<T extends Repository<S, ID>, S, ID e
         RepositoryFactoryBeanSupport<T, S, ID> {
 
     private DataStoreEntityManager dataStoreEntityManager;
-    private boolean createIndexesForQueryMethods = false;
     private boolean mappingContextConfigured = false;
 
     @Override
     protected RepositoryFactorySupport createRepositoryFactory() {
-        RepositoryFactorySupport factory = getFactoryInstance(dataStoreEntityManager);
-
-        //TODO:Implement if query method is indexed
-       /* if (createIndexesForQueryMethods) {
-            factory.addQueryCreationListener(new IndexEnsuringQueryCreationListener(operations));
-        }*/
-        return factory;
+        return getFactoryInstance(dataStoreEntityManager);
     }
 
     public DataStoreEntityManager getDataStoreEntityManager() {
         return dataStoreEntityManager;
-    }
-
-    public void setCreateIndexesForQueryMethods(boolean createIndexesForQueryMethods) {
-        this.createIndexesForQueryMethods = createIndexesForQueryMethods;
     }
 
     protected RepositoryFactorySupport getFactoryInstance(DataStoreEntityManager operations) {
@@ -48,7 +38,7 @@ public class DataStoreRepositoryFactoryBean<T extends Repository<S, ID>, S, ID e
     public void afterPropertiesSet() {
 
         super.afterPropertiesSet();
-        Assert.notNull(dataStoreEntityManager, "MongoTemplate must not be null!");
+        Assert.notNull(dataStoreEntityManager, "Datastore template must not be null!");
 
         if (!mappingContextConfigured) {
             setMappingContext(dataStoreEntityManager.getConverter().getMappingContext());

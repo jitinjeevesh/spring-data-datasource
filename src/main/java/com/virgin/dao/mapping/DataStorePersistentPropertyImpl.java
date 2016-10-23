@@ -1,4 +1,4 @@
-package com.virgin.dao;
+package com.virgin.dao.mapping;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,15 +10,15 @@ import org.springframework.util.StringUtils;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 
-public class BasicDataStorePersistentProperty extends AnnotationBasedPersistentProperty<DataStorePersistentProperty> implements
+public class DataStorePersistentPropertyImpl extends AnnotationBasedPersistentProperty<DataStorePersistentProperty> implements
         DataStorePersistentProperty {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BasicDataStorePersistentProperty.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DataStorePersistentPropertyImpl.class);
     private static final String ID_FIELD_NAME = "id";
     private final FieldNamingStrategy fieldNamingStrategy;
 
 
-    public BasicDataStorePersistentProperty(Field field, PropertyDescriptor propertyDescriptor, BasicDataStorePersistentEntity<?> owner, SimpleTypeHolder simpleTypeHolder, FieldNamingStrategy fieldNamingStrategy) {
+    public DataStorePersistentPropertyImpl(Field field, PropertyDescriptor propertyDescriptor, PersistentEntity<?, DataStorePersistentProperty> owner, SimpleTypeHolder simpleTypeHolder, FieldNamingStrategy fieldNamingStrategy) {
         super(field, propertyDescriptor, owner, simpleTypeHolder);
         this.fieldNamingStrategy = fieldNamingStrategy == null ? PropertyNameFieldNamingStrategy.INSTANCE
                 : fieldNamingStrategy;

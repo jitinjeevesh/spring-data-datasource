@@ -1,27 +1,26 @@
 package com.virgin;
 
-import com.jmethods.catatumbo.EntityManager;
-import com.jmethods.catatumbo.EntityManagerFactory;
-import com.jmethods.catatumbo.EntityQueryRequest;
-import com.jmethods.catatumbo.QueryResponse;
-import com.virgin.entity.Settings;
-import com.virgin.entity.VirginRedUser;
-import com.virgin.example.KindRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.virgin.dao.DataStoreTemplate;
+import com.virgin.dao.repository.config.EnableDataStoreRepositories;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @SpringBootApplication
-@ComponentScan({"sample", "com.virgin.dao"})
+@EnableDataStoreRepositories
+@ComponentScan({"sample", "com.virgin"})
 public class Application {
 
-    @Autowired
-    private KindRepository kindRepository;
+//    @Autowired
+//    private KindRepository kindRepository;
+
+    /*@Bean
+    public DataStoreTemplate dataStoreTemplate() throws Exception {
+        System.out.println("Creating Bean for : DefaultDataStoreEntityManager");
+        return new DataStoreTemplate();
+    }*/
 
     public static void main(String[] args) throws InterruptedException {
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);

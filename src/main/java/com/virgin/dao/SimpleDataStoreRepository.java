@@ -1,12 +1,15 @@
 package com.virgin.dao;
 
+import com.virgin.dao.repository.support.DataStoreEntityInformation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
 
+//@Repository
 public class SimpleDataStoreRepository<T, ID extends Serializable> implements DataStoreRepository<T, ID> {
 
     private static final String ID_MUST_NOT_BE_NULL = "The given id must not be null!";

@@ -1,6 +1,8 @@
 package com.virgin.dao;
 
 import com.google.cloud.datastore.Entity;
+import com.virgin.dao.mapping.DataStorePersistentEntity;
+import com.virgin.dao.mapping.DataStorePersistentProperty;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.util.TypeInformation;

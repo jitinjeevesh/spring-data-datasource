@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.virgin.dao.cdi;
+package com.virgin.dao.repository.cdi;
 
 import com.virgin.dao.DataStoreEntityManager;
-import com.virgin.dao.DataStoreRepositoryFactory;
+import com.virgin.dao.repository.support.DataStoreRepositoryFactory;
 import org.springframework.data.repository.cdi.CdiRepositoryBean;
 import org.springframework.data.repository.config.CustomRepositoryImplementationDetector;
 import org.springframework.util.Assert;
@@ -45,7 +45,10 @@ public class DataStoreRepositoryBean<T> extends CdiRepositoryBean<T> {
 
     @Override
     protected T create(CreationalContext<T> creationalContext, Class<T> repositoryType, Object customImplementation) {
+        // Get an instance from the associated entity manager bean.
         DataStoreEntityManager dataStoreEntityManager = getDependencyInstance(operations, DataStoreEntityManager.class);
+
+        // Create the Datastore repository instance and return it.
         DataStoreRepositoryFactory factory = new DataStoreRepositoryFactory(dataStoreEntityManager);
         return factory.getRepository(repositoryType, customImplementation);
     }

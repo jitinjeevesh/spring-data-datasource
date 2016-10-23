@@ -1,4 +1,4 @@
-package com.virgin.dao.cdi;
+package com.virgin.dao.repository.cdi;
 
 import com.virgin.dao.DataStoreEntityManager;
 import org.slf4j.Logger;
@@ -25,26 +25,33 @@ public class DataStoreRepositoryExtension extends CdiRepositoryExtensionSupport 
     private final Map<Set<Annotation>, Bean<DataStoreEntityManager>> dataStoreEntityManager = new HashMap<Set<Annotation>, Bean<DataStoreEntityManager>>();
 
     public DataStoreRepositoryExtension() {
+        System.out.println(".........................................................................");
         LOG.info("Activating CDI extension for Spring Data DataStore repositories.");
     }
 
     <X> void processBean(@Observes ProcessBean<X> processBean) {
-
+        System.out.println("...............Inside process bean.........................");
         Bean<X> bean = processBean.getBean();
-
         for (Type type : bean.getTypes()) {
+            // Check if the bean is an DataStoreEntityManager.
             if (type instanceof Class<?> && DataStoreEntityManager.class.isAssignableFrom((Class<?>) type)) {
+                Set<Annotation> qualifiers = new HashSet<Annotation>(bean.getQualifiers());
                 if (LOG.isDebugEnabled()) {
                     LOG.debug(String.format("Discovered %s with qualifiers %s.", DataStoreEntityManager.class.getName(),
                             bean.getQualifiers()));
                 }
                 // Store the EntityManager bean using its qualifiers.
-                dataStoreEntityManager.put(new HashSet<Annotation>(bean.getQualifiers()), (Bean<DataStoreEntityManager>) bean);
+                if (bean.isAlternative() || !dataStoreEntityManager.containsKey(qualifiers)) {
+                    LOG.debug("Discovered '{}' with qualifiers {}.", DataStoreEntityManager.class.getName(), qualifiers);
+                    dataStoreEntityManager.put(qualifiers, (Bean<DataStoreEntityManager>) bean);
+                }
+//                dataStoreEntityManager.put(new HashSet<Annotation>(bean.getQualifiers()), (Bean<DataStoreEntityManager>) bean);
             }
         }
     }
 
     void afterBeanDiscovery(@Observes AfterBeanDiscovery afterBeanDiscovery, BeanManager beanManager) {
+        System.out.println("...............After bean discovery.........................");
         for (Map.Entry<Class<?>, Set<Annotation>> entry : getRepositoryTypes()) {
             Class<?> repositoryType = entry.getKey();
             Set<Annotation> qualifiers = entry.getValue();
@@ -64,13 +71,13 @@ public class DataStoreRepositoryExtension extends CdiRepositoryExtensionSupport 
 
     private <T> CdiRepositoryBean<T> createRepositoryBean(Class<T> repositoryType, Set<Annotation> qualifiers, BeanManager beanManager) {
         // Determine the MongoOperations bean which matches the qualifiers of the repository.
-        Bean<DataStoreEntityManager> mongoOperations = this.dataStoreEntityManager.get(qualifiers);
+        Bean<DataStoreEntityManager> dataStoreEntityManagerBean = this.dataStoreEntityManager.get(qualifiers);
 
-        if (mongoOperations == null) {
+        if (dataStoreEntityManagerBean == null) {
             throw new UnsatisfiedResolutionException(String.format("Unable to resolve a bean for '%s' with qualifiers %s.",
                     DataStoreEntityManager.class.getName(), qualifiers));
         }
         // Construct and return the repository bean.
-        return new DataStoreRepositoryBean<T>(mongoOperations, qualifiers, repositoryType, beanManager, getCustomImplementationDetector());
+        return new DataStoreRepositoryBean<T>(dataStoreEntityManagerBean, qualifiers, repositoryType, beanManager, getCustomImplementationDetector());
     }
 }
