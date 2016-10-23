@@ -11,11 +11,18 @@ public class DataStoreTemplate implements DataStoreEntityManager {
     private static final Logger LOG = LoggerFactory.getLogger(DataStoreTemplate.class);
     private final DataStoreConverter dataStoreConverter;
     private Datastore datastore;
+    private String name;
 
     private DatastoreReader nativeReader = null;
 
     public DataStoreTemplate() {
         this(null, null);
+    }
+
+    public DataStoreTemplate(String name) {
+        this(null, null);
+        System.out.println("Inside DataStoreTemplate constructor");
+        System.out.println(name);
     }
 
     public DataStoreTemplate(Datastore datastore, DataStoreConverter dataStoreConverter) {

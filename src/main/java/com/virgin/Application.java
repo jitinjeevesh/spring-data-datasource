@@ -1,6 +1,8 @@
 package com.virgin;
 
 import com.virgin.dao.repository.config.EnableDataStoreRepositories;
+import com.virgin.example.KindRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -11,14 +13,8 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan({"sample", "com.virgin"})
 public class Application {
 
-//    @Autowired
-//    private KindRepository kindRepository;
-
-    /*@Bean
-    public DataStoreTemplate dataStoreTemplate() throws Exception {
-        System.out.println("Creating Bean for : DefaultDataStoreEntityManager");
-        return new DataStoreTemplate();
-    }*/
+    @Autowired
+    private KindRepository kindRepository;
 
     public static void main(String[] args) throws InterruptedException {
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
@@ -28,6 +24,7 @@ public class Application {
 
 
     public void init() {
+        kindRepository.delete(2l);
 //        EntityManagerFactory emf = EntityManagerFactory.getInstance();
 //        EntityManager em = emf.createDefaultEntityManager();
 //        String s = "devBackups/datastore_backup_BackupInto_devBackups_2016_10_18_UserBrandInfo/1570308648017407187851861401ABA/output-9";

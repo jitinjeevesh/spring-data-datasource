@@ -4,7 +4,6 @@ import com.virgin.dao.repository.support.DataStoreEntityInformation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
@@ -51,6 +50,7 @@ public class SimpleDataStoreRepository<T, ID extends Serializable> implements Da
 
     @Override
     public <S extends T> S save(S entity) {
+        System.out.println("Entity fetched successfully");
         return null;
     }
 
@@ -81,12 +81,12 @@ public class SimpleDataStoreRepository<T, ID extends Serializable> implements Da
 
     @Override
     public void delete(ID id) {
-
+        System.out.println("Deleted successfully by Id" + id);
     }
 
     @Override
     public void delete(T entity) {
-
+        System.out.println("Entity Deleted successfully by Id");
     }
 
     @Override

@@ -24,6 +24,10 @@ public class DataStoreRepositoryFactoryBean<T extends Repository<S, ID>, S, ID e
         return dataStoreEntityManager;
     }
 
+    public void setDataStoreEntityManager(DataStoreEntityManager dataStoreEntityManager) {
+        this.dataStoreEntityManager = dataStoreEntityManager;
+    }
+
     protected RepositoryFactorySupport getFactoryInstance(DataStoreEntityManager operations) {
         return new DataStoreRepositoryFactory(operations);
     }
@@ -40,8 +44,8 @@ public class DataStoreRepositoryFactoryBean<T extends Repository<S, ID>, S, ID e
         super.afterPropertiesSet();
         Assert.notNull(dataStoreEntityManager, "Datastore template must not be null!");
 
-        if (!mappingContextConfigured) {
+       /* if (!mappingContextConfigured) {
             setMappingContext(dataStoreEntityManager.getConverter().getMappingContext());
-        }
+        }*/
     }
 }

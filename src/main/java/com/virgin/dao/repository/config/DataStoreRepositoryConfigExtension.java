@@ -1,10 +1,12 @@
 package com.virgin.dao.repository.config;
 
 import com.virgin.dao.DataStoreRepository;
+import com.virgin.dao.DataStoreTemplate;
 import com.virgin.dao.Kind;
-import com.virgin.dao.config.DataStoreTemplateParser;
 import com.virgin.dao.mapping.DataStoreMappingContextFactoryBean;
 import com.virgin.dao.repository.support.DataStoreRepositoryFactoryBean;
+import org.springframework.beans.factory.config.ConstructorArgumentValues;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -23,7 +25,7 @@ import java.util.Collections;
 
 public class DataStoreRepositoryConfigExtension extends RepositoryConfigurationExtensionSupport {
 
-    private static final String DATASTORE_TEMPLATE_REF = "datastore-template-ref";
+    private static final String DATASTORE_TEMPLATE_REF = "dataStore-template-ref";
 
     @Override
     public String getModuleName() {
@@ -32,7 +34,7 @@ public class DataStoreRepositoryConfigExtension extends RepositoryConfigurationE
 
     @Override
     protected String getModulePrefix() {
-        return "datastore";
+        return "dataStore";
     }
 
     @Override
@@ -61,9 +63,9 @@ public class DataStoreRepositoryConfigExtension extends RepositoryConfigurationE
         AnnotationAttributes attributes = config.getAttributes();
         System.out.println("..........................................................................");
         System.out.println(attributes);
-        String dataStoreTemplateRef = attributes.getString("datastoreTemplateRef");
+        String dataStoreTemplateRef = attributes.getString("dataStoreTemplateRef");
         if (StringUtils.hasText(dataStoreTemplateRef))
-            builder.addPropertyReference("dataStoreEntityManager", attributes.getString("datastoreTemplateRef"));
+            builder.addPropertyReference("dataStoreEntityManager", attributes.getString("dataStoreTemplateRef"));
     }
 
 
@@ -72,12 +74,25 @@ public class DataStoreRepositoryConfigExtension extends RepositoryConfigurationE
 
         super.registerBeansForRoot(registry, config);
 
+        System.out.println("............................registerBeansForRoot.......................................");
         Object source = config.getSource();
+//        registerIfNotAlreadyRegistered(new RootBeanDefinition(DataStoreTemplateFactoryBean.class), registry,
+//                "dataStoreTemplate", source);
+
+
+        RootBeanDefinition rootBeanDefinition = new RootBeanDefinition(DataStoreTemplate.class);
+        rootBeanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_CONSTRUCTOR);
+        ConstructorArgumentValues constructorArgumentValues = new ConstructorArgumentValues();
+        constructorArgumentValues.addIndexedArgumentValue(0, "Name");
+        rootBeanDefinition.setConstructorArgumentValues(constructorArgumentValues);
+        registerIfNotAlreadyRegistered(rootBeanDefinition, registry, "dataStoreTemplate", source);
+
+
         registerIfNotAlreadyRegistered(new RootBeanDefinition(DataStoreMappingContextFactoryBean.class), registry,
                 "dataStoreMappingContext", source);
 
-        registerIfNotAlreadyRegistered(new RootBeanDefinition(DataStoreTemplateParser.class), registry,
-                "datastoreTemplateRef", source);
+//        registerIfNotAlreadyRegistered(new RootBeanDefinition(DataStoreTemplateParser.class), registry,
+//                "dataStoreTemplateRef", source);
 
        /* registerIfNotAlreadyRegistered(new RootBeanDefinition(EntityManagerBeanDefinitionRegistrarPostProcessor.class),
                 registry, EM_BEAN_DEFINITION_REGISTRAR_POST_PROCESSOR_BEAN_NAME, source);
