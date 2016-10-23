@@ -15,10 +15,10 @@
  */
 package com.virgin.dao;
 
-import org.springframework.data.mapping.PersistentEntity;
+import org.springframework.data.repository.core.EntityMetadata;
 
-public interface DataStorePersistentEntity<T> extends PersistentEntity<T, DataStorePersistentProperty> {
+public interface DataStoreEntityMetaData<T> extends EntityMetadata<T> {
 
-    String getKind();
+    String getKindName();
 
 }

@@ -32,18 +32,16 @@ public class DefaultDataStoreEntityManagerParser extends AbstractBeanDefinitionP
         BeanDefinitionBuilder mongoTemplateBuilder = BeanDefinitionBuilder.genericBeanDefinition(DefaultDataStoreEntityManager.class);
 //        setPropertyValue(mongoTemplateBuilder, element, "write-concern", "writeConcern");
 
-      */
-/*  if (StringUtils.hasText(dbFactoryRef)) {
+  if (StringUtils.hasText(dbFactoryRef)) {
             mongoTemplateBuilder.addConstructorArgReference(dbFactoryRef);
         } else {
             mongoTemplateBuilder.addConstructorArgReference(BeanNames.DB_FACTORY_BEAN_NAME);
-        }*//*
+        }
 
 
-     */
-/*   if (StringUtils.hasText(converterRef)) {
+   if (StringUtils.hasText(converterRef)) {
             mongoTemplateBuilder.addConstructorArgReference(converterRef);
-        }*//*
+        }
 
 
         BeanDefinitionBuilder writeConcernPropertyEditorBuilder = getWriteConcernPropertyEditorBuilder();

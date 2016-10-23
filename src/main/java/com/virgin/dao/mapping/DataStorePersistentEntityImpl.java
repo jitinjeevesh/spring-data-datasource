@@ -1,21 +1,22 @@
-package com.virgin.dao;
+package com.virgin.dao.mapping;
 
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import com.virgin.dao.Kind;
+import com.virgin.dao.mapping.DataStorePersistentEntity;
+import com.virgin.dao.mapping.DataStorePersistentProperty;
 import org.springframework.data.mapping.model.BasicPersistentEntity;
 import org.springframework.data.util.TypeInformation;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.util.StringUtils;
 
-public class BasicDataStorePersistentEntity<T> extends BasicPersistentEntity<T, DataStorePersistentProperty> implements DataStorePersistentEntity<T>, ApplicationContextAware {
+public class DataStorePersistentEntityImpl<T> extends BasicPersistentEntity<T, DataStorePersistentProperty>
+        implements DataStorePersistentEntity<T> {
 
     private static final SpelExpressionParser PARSER = new SpelExpressionParser();
     //    private final StandardEvaluationContext context;
     //    private final Expression expression;
     private final String kind;
 
-    public BasicDataStorePersistentEntity(TypeInformation<T> typeInformation) {
+    public DataStorePersistentEntityImpl(TypeInformation<T> typeInformation) {
         super(typeInformation);
         Class<?> rawType = typeInformation.getType();
         String fallback = rawType.getSimpleName();
@@ -30,16 +31,10 @@ public class BasicDataStorePersistentEntity<T> extends BasicPersistentEntity<T, 
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-       /* context.addPropertyAccessor(new BeanFactoryAccessor());
-        context.setBeanResolver(new BeanFactoryResolver(applicationContext));
-        context.setRootObject(applicationContext);*/
+    protected DataStorePersistentProperty returnPropertyIfBetterIdPropertyCandidateOrNull(DataStorePersistentProperty property) {
+        return property.isIdProperty() ? property : null;
     }
 
-    @Override
-    public String getKind() {
-        return kind;
-    }
 
 //This included when we write the expression
 /*    private static Expression detectExpression(Kind kind) {

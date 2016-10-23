@@ -1,0 +1,2 @@
+http\://www.virgin.org/schema/data/datasource/spring-datasource-1.0.xsd=/data/datastore/repository/config/spring-datasource-1.0.xsd
+http\://www.virgin.org/schema/data/datasource/spring-datasource.xsd=/data/datastore/repository/config/spring-datasource-1.0.xsd

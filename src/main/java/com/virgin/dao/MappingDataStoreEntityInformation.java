@@ -1,26 +1,23 @@
 package com.virgin.dao;
 
-import org.springframework.data.repository.core.support.PersistentEntityInformation;
+import com.virgin.dao.repository.support.DataStoreEntityInformationSupport;
 
 import java.io.Serializable;
 
-public class MappingDataStoreEntityInformation<T, ID extends Serializable> extends PersistentEntityInformation<T, ID> implements DataStoreEntityInformation<T, ID> {
+//Ref : JpaMetamodelEntityInformation
+public class MappingDataStoreEntityInformation<T, ID extends Serializable> extends DataStoreEntityInformationSupport<T, ID> {
 
-    private final DataStorePersistentEntity<T> entityMetadata;
-    private final Class<ID> fallbackIdType;
-
-    public MappingDataStoreEntityInformation(DataStorePersistentEntity<T> entity) {
-        this(entity, null);
-    }
-
-    public MappingDataStoreEntityInformation(DataStorePersistentEntity<T> entity, Class<ID> fallbackIdType) {
-        super(entity);
-        this.entityMetadata = entity;
-        this.fallbackIdType = fallbackIdType;
+    public MappingDataStoreEntityInformation(Class<T> domainClass) {
+        super(domainClass);
     }
 
     @Override
-    public String getKindName() {
-        return entityMetadata.getKind();
+    public ID getId(T entity) {
+        return null;
+    }
+
+    @Override
+    public Class<ID> getIdType() {
+        return null;
     }
 }
