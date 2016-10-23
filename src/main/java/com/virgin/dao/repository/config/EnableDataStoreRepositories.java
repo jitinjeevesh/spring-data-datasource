@@ -35,5 +35,5 @@ public @interface EnableDataStoreRepositories {
 
     Class<?> repositoryBaseClass() default DefaultRepositoryBaseClass.class;
 
-    String datastoreTemplateRef() default "datastoreTemplate";
+    String dataStoreTemplateRef() default "dataStoreTemplate";
 }

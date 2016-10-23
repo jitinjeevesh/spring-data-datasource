@@ -12,17 +12,17 @@
     <xsd:import namespace="http://www.springframework.org/schema/data/repository"
                 schemaLocation="http://www.springframework.org/schema/data/repository/spring-repository-1.0.xsd"/>
 
-    <xsd:complexType name="datastore-repository">
+    <xsd:complexType name="dataStore-repository">
         <xsd:complexContent>
             <xsd:extension base="repository:repository">
-                <xsd:attributeGroup ref="datastore-repository-attributes"/>
+                <xsd:attributeGroup ref="dataStore-repository-attributes"/>
                 <xsd:attributeGroup ref="repository:repository-attributes"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
 
-    <xsd:attributeGroup name="datastore-repository-attributes">
-        <xsd:attribute name="datastore-template-ref" type="datastoreTemplateRef" default="dataStoreTemplate">
+    <xsd:attributeGroup name="dataStore-repository-attributes">
+        <xsd:attribute name="dataStore-template-ref" type="dataStoreTemplateRef" default="dataStoreTemplate">
             <xsd:annotation>
                 <xsd:documentation>
                     The reference to a DataStoreTemplate. Will default to 'dataStoreTemplate'.
@@ -39,7 +39,7 @@
         </xsd:attribute>-->
     </xsd:attributeGroup>
 
-    <xsd:simpleType name="datastoreTemplateRef">
+    <xsd:simpleType name="dataStoreTemplateRef">
         <xsd:annotation>
             <xsd:appinfo>
                 <tool:annotation kind="ref">
@@ -55,9 +55,9 @@
             <xsd:complexContent>
                 <xsd:extension base="repository:repositories">
                     <xsd:sequence>
-                        <xsd:element name="repository" minOccurs="0" maxOccurs="unbounded" type="datastore-repository"/>
+                        <xsd:element name="repository" minOccurs="0" maxOccurs="unbounded" type="dataStore-repository"/>
                     </xsd:sequence>
-                    <xsd:attributeGroup ref="datastore-repository-attributes"/>
+                    <xsd:attributeGroup ref="dataStore-repository-attributes"/>
                     <xsd:attributeGroup ref="repository:repository-attributes"/>
                 </xsd:extension>
             </xsd:complexContent>
