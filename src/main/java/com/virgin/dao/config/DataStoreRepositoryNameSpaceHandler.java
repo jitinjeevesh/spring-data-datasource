@@ -4,7 +4,9 @@ import com.virgin.dao.repository.config.DataStoreRepositoryConfigExtension;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 import org.springframework.data.repository.config.RepositoryBeanDefinitionParser;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
+import org.springframework.stereotype.Component;
 
+@Component
 public class DataStoreRepositoryNameSpaceHandler extends NamespaceHandlerSupport {
 
     public void init() {

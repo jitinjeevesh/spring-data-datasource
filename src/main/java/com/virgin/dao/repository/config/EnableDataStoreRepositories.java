@@ -34,4 +34,6 @@ public @interface EnableDataStoreRepositories {
     Class<?> repositoryFactoryBeanClass() default DataStoreRepositoryFactoryBean.class;
 
     Class<?> repositoryBaseClass() default DefaultRepositoryBaseClass.class;
+
+    String datastoreTemplateRef() default "datastoreTemplate";
 }

@@ -1,11 +1,9 @@
 package com.virgin;
 
-import com.virgin.dao.DataStoreTemplate;
 import com.virgin.dao.repository.config.EnableDataStoreRepositories;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
@@ -30,8 +28,6 @@ public class Application {
 
 
     public void init() {
-
-
 //        EntityManagerFactory emf = EntityManagerFactory.getInstance();
 //        EntityManager em = emf.createDefaultEntityManager();
 //        String s = "devBackups/datastore_backup_BackupInto_devBackups_2016_10_18_UserBrandInfo/1570308648017407187851861401ABA/output-9";

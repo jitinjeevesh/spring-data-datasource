@@ -41,9 +41,8 @@ public class DataStoreRepositoryFactory extends RepositoryFactorySupport {
     @Override
     protected Object getTargetRepository(RepositoryInformation information) {
         DataStoreEntityInformation<?, Serializable> entityInformation = getEntityInformation(information.getDomainType());
-        SimpleDataStoreRepository<?, ?> repository = getTargetRepositoryViaReflection(information, entityInformation, dataStoreEntityManager);
         //Use setter here if required.
-        return repository;
+        return getTargetRepositoryViaReflection(information, entityInformation, dataStoreEntityManager);
     }
 
     //TODO: Check is Query dsl repository is used.
