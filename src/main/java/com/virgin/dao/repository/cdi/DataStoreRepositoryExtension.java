@@ -70,7 +70,7 @@ public class DataStoreRepositoryExtension extends CdiRepositoryExtensionSupport 
     }
 
     private <T> CdiRepositoryBean<T> createRepositoryBean(Class<T> repositoryType, Set<Annotation> qualifiers, BeanManager beanManager) {
-        // Determine the MongoOperations bean which matches the qualifiers of the repository.
+        // Determine the DataStoreOperation bean which matches the qualifiers of the repository.
         Bean<DataStoreEntityManager> dataStoreEntityManagerBean = this.dataStoreEntityManager.get(qualifiers);
 
         if (dataStoreEntityManagerBean == null) {
