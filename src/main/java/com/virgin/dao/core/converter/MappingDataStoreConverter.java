@@ -1,4 +1,4 @@
-package com.virgin.dao;
+package com.virgin.dao.core.converter;
 
 import com.google.cloud.datastore.Entity;
 import com.virgin.dao.mapping.DataStorePersistentEntity;

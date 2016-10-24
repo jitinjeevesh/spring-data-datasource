@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.virgin.dao;
+package com.virgin.dao.repository.query;
 
 import org.springframework.data.repository.core.EntityMetadata;
 

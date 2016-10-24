@@ -1,6 +1,6 @@
 package com.virgin.dao.config;
 
-import com.virgin.dao.DataStoreTemplate;
+import com.virgin.dao.core.DataStoreTemplate;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;

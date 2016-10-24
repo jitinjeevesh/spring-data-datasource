@@ -1,7 +1,9 @@
 package com.virgin.dao.mapping;
 
+import com.virgin.dao.core.mapping.Column;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mapping.Association;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.mapping.model.*;
@@ -9,6 +11,9 @@ import org.springframework.util.StringUtils;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.Set;
 
 public class DataStorePersistentPropertyImpl extends AnnotationBasedPersistentProperty<DataStorePersistentProperty> implements
         DataStorePersistentProperty {
@@ -16,21 +21,37 @@ public class DataStorePersistentPropertyImpl extends AnnotationBasedPersistentPr
     private static final Logger LOG = LoggerFactory.getLogger(DataStorePersistentPropertyImpl.class);
     private static final String ID_FIELD_NAME = "id";
     private final FieldNamingStrategy fieldNamingStrategy;
+    private static final Set<String> SUPPORTED_ID_PROPERTY_NAMES = new HashSet<String>();
+
+    static {
+        SUPPORTED_ID_PROPERTY_NAMES.add("id");
+    }
 
 
     public DataStorePersistentPropertyImpl(Field field, PropertyDescriptor propertyDescriptor, PersistentEntity<?, DataStorePersistentProperty> owner, SimpleTypeHolder simpleTypeHolder, FieldNamingStrategy fieldNamingStrategy) {
         super(field, propertyDescriptor, owner, simpleTypeHolder);
         this.fieldNamingStrategy = fieldNamingStrategy == null ? PropertyNameFieldNamingStrategy.INSTANCE
                 : fieldNamingStrategy;
-
-      /*  if (isIdProperty() && getFieldName() != ID_FIELD_NAME) {
+       /* if (isIdProperty() && getFieldName() != ID_FIELD_NAME) {
             LOG.warn("Customizing field name for id property not allowed! Custom name will not be considered!");
         }*/
+    }
+
+    //TODO:We can define custom id implementation here. Right now we restrict only for @Id and id field name.
+    @Override
+    public boolean isIdProperty() {
+        return super.isIdProperty() || SUPPORTED_ID_PROPERTY_NAMES.contains(getName()) && !hasExplicitFieldName();
+
     }
 
     @Override
     protected Association<DataStorePersistentProperty> createAssociation() {
         return new Association<DataStorePersistentProperty>(this, null);
+    }
+
+    @Override
+    public boolean isExplicitIdProperty() {
+        return isAnnotationPresent(Id.class);
     }
 
     @Override
@@ -50,10 +71,9 @@ public class DataStorePersistentPropertyImpl extends AnnotationBasedPersistentPr
             }
         }
 
-        //Todo: Custom field name annotation.
-        /*if (hasExplicitFieldName()) {
+        if (hasExplicitFieldName()) {
             return getAnnotatedFieldName();
-        }*/
+        }
 
         String fieldName = fieldNamingStrategy.getFieldName(this);
 
@@ -63,5 +83,17 @@ public class DataStorePersistentPropertyImpl extends AnnotationBasedPersistentPr
         }
 
         return fieldName;
+    }
+
+    protected boolean hasExplicitFieldName() {
+        return StringUtils.hasText(getAnnotatedFieldName());
+    }
+
+    private String getAnnotatedFieldName() {
+        Column annotation = findAnnotation(Column.class);
+        if (annotation != null && StringUtils.hasText(annotation.value())) {
+            return annotation.value();
+        }
+        return null;
     }
 }

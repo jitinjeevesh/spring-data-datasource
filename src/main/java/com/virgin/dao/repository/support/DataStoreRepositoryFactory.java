@@ -1,7 +1,6 @@
 package com.virgin.dao.repository.support;
 
-import com.virgin.dao.DataStoreEntityManager;
-import com.virgin.dao.SimpleDataStoreRepository;
+import com.virgin.dao.core.DataStoreOperation;
 import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
@@ -14,12 +13,12 @@ import java.io.Serializable;
 public class DataStoreRepositoryFactory extends RepositoryFactorySupport {
 
     //    private final MappingContext<? extends DataStoreEntityMetaData<?>, DataStorePersistentProperty> mappingContext;
-    private final DataStoreEntityManager dataStoreEntityManager;
+    private final DataStoreOperation dataStoreOperation;
 
-    public DataStoreRepositoryFactory(DataStoreEntityManager dataStoreEntityManager) {
-        Assert.notNull(dataStoreEntityManager, "DataStoreEntityManager can not be null inside DataStoreRepositoryFactory");
-        this.dataStoreEntityManager = dataStoreEntityManager;
-//        this.mappingContext = dataStoreEntityManager.getConverter().getMappingContext();
+    public DataStoreRepositoryFactory(DataStoreOperation dataStoreOperation) {
+        Assert.notNull(dataStoreOperation, "DataStoreOperation can not be null inside DataStoreRepositoryFactory");
+        this.dataStoreOperation = dataStoreOperation;
+//        this.mappingContext = dataStoreOperation.getConverter().getMappingContext();
     }
 
     @Override
@@ -42,7 +41,7 @@ public class DataStoreRepositoryFactory extends RepositoryFactorySupport {
     protected Object getTargetRepository(RepositoryInformation information) {
         DataStoreEntityInformation<?, Serializable> entityInformation = getEntityInformation(information.getDomainType());
         //Use setter here if required.
-        return getTargetRepositoryViaReflection(information, entityInformation, dataStoreEntityManager);
+        return getTargetRepositoryViaReflection(information, entityInformation, dataStoreOperation);
     }
 
     //TODO: Check is Query dsl repository is used.

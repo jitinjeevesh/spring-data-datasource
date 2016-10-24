@@ -15,7 +15,7 @@
  */
 package com.virgin.dao.repository.cdi;
 
-import com.virgin.dao.DataStoreEntityManager;
+import com.virgin.dao.core.DataStoreOperation;
 import com.virgin.dao.repository.support.DataStoreRepositoryFactory;
 import org.springframework.data.repository.cdi.CdiRepositoryBean;
 import org.springframework.data.repository.config.CustomRepositoryImplementationDetector;
@@ -32,9 +32,9 @@ import java.util.Set;
  */
 public class DataStoreRepositoryBean<T> extends CdiRepositoryBean<T> {
 
-    private final Bean<DataStoreEntityManager> operations;
+    private final Bean<DataStoreOperation> operations;
 
-    public DataStoreRepositoryBean(Bean<DataStoreEntityManager> dataStoreEntityManagerBean, Set<Annotation> qualifiers, Class<T> repositoryType,
+    public DataStoreRepositoryBean(Bean<DataStoreOperation> dataStoreEntityManagerBean, Set<Annotation> qualifiers, Class<T> repositoryType,
                                    BeanManager beanManager, CustomRepositoryImplementationDetector detector) {
 
         super(qualifiers, repositoryType, beanManager, detector);
@@ -48,10 +48,10 @@ public class DataStoreRepositoryBean<T> extends CdiRepositoryBean<T> {
         System.out.println(".......................Inside create repository bean.....................");
         System.out.println(repositoryType);
         // Get an instance from the associated entity manager bean.
-        DataStoreEntityManager dataStoreEntityManager = getDependencyInstance(operations, DataStoreEntityManager.class);
+        DataStoreOperation dataStoreOperation = getDependencyInstance(operations, DataStoreOperation.class);
 
         // Create the Datastore repository instance and return it.
-        DataStoreRepositoryFactory factory = new DataStoreRepositoryFactory(dataStoreEntityManager);
+        DataStoreRepositoryFactory factory = new DataStoreRepositoryFactory(dataStoreOperation);
         return factory.getRepository(repositoryType, customImplementation);
     }
 }

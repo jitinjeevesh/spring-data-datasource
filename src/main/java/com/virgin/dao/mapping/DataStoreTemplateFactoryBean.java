@@ -1,12 +1,11 @@
 package com.virgin.dao.mapping;
 
-import com.virgin.dao.DataStoreTemplate;
+import com.virgin.dao.core.DataStoreTemplate;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.data.mapping.model.PropertyNameFieldNamingStrategy;
 
 public class DataStoreTemplateFactoryBean extends AbstractFactoryBean<DataStoreTemplate> implements
         ApplicationContextAware {
