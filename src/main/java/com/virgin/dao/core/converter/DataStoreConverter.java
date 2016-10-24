@@ -1,4 +1,4 @@
-package com.virgin.dao;
+package com.virgin.dao.core.converter;
 
 import com.google.cloud.datastore.Entity;
 import com.virgin.dao.mapping.DataStorePersistentEntity;
@@ -8,4 +8,5 @@ import org.springframework.data.convert.EntityReader;
 
 public interface DataStoreConverter extends EntityConverter<DataStorePersistentEntity<?>, DataStorePersistentProperty, Object, Entity>,
         DataStoreWriter<Object>, EntityReader<Object, Entity> {
+    String test();
 }

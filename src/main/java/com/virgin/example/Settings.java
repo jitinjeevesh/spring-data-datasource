@@ -1,6 +1,6 @@
 package com.virgin.example;
 
-import com.virgin.dao.Kind;
+import com.virgin.dao.core.mapping.Kind;
 
 @Kind
 public class Settings {

@@ -43,7 +43,7 @@
         <xsd:annotation>
             <xsd:appinfo>
                 <tool:annotation kind="ref">
-                    <tool:assignable-to type="com.virgin.dao.DataStoreTemplate"/>
+                    <tool:assignable-to type="com.virgin.dao.core.DataStoreTemplate"/>
                 </tool:annotation>
             </xsd:appinfo>
         </xsd:annotation>

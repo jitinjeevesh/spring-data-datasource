@@ -8,10 +8,12 @@ import org.springframework.data.mapping.model.FieldNamingStrategy;
 import org.springframework.data.mapping.model.PropertyNameFieldNamingStrategy;
 import org.springframework.data.mapping.model.SimpleTypeHolder;
 import org.springframework.data.util.TypeInformation;
+import org.springframework.stereotype.Component;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 
+@Component
 public class DataStoreMappingContext extends AbstractMappingContext<DataStorePersistentEntityImpl<?>, DataStorePersistentProperty>
         implements ApplicationContextAware {
 
@@ -29,7 +31,11 @@ public class DataStoreMappingContext extends AbstractMappingContext<DataStorePer
 
     @Override
     protected <T> DataStorePersistentEntityImpl<?> createPersistentEntity(TypeInformation<T> typeInformation) {
-        return new DataStorePersistentEntityImpl<T>(typeInformation);
+        DataStorePersistentEntityImpl<T> dataStorePersistentEntity = new DataStorePersistentEntityImpl<T>(typeInformation);
+        if (context != null) {
+            dataStorePersistentEntity.setApplicationContext(context);
+        }
+        return dataStorePersistentEntity;
     }
 
     @Override

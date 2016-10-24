@@ -1,4 +1,4 @@
-package com.virgin.dao;
+package com.virgin.dao.core.mapping;
 
 import org.springframework.data.annotation.Persistent;
 

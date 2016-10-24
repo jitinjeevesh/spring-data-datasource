@@ -6,4 +6,6 @@ public interface DataStorePersistentProperty extends PersistentProperty<DataStor
 
     String getFieldName();
 
+    boolean isExplicitIdProperty();
+
 }

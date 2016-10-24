@@ -1,6 +1,4 @@
-package com.virgin.dao;
-
-import com.virgin.dao.repository.support.DataStoreEntityInformationSupport;
+package com.virgin.dao.repository.support;
 
 import java.io.Serializable;
 

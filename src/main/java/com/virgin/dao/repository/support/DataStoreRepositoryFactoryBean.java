@@ -1,6 +1,6 @@
 package com.virgin.dao.repository.support;
 
-import com.virgin.dao.DataStoreEntityManager;
+import com.virgin.dao.core.DataStoreOperation;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
@@ -12,23 +12,23 @@ import java.io.Serializable;
 public class DataStoreRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable> extends
         RepositoryFactoryBeanSupport<T, S, ID> {
 
-    private DataStoreEntityManager dataStoreEntityManager;
+    private DataStoreOperation dataStoreOperation;
     private boolean mappingContextConfigured = false;
 
     @Override
     protected RepositoryFactorySupport createRepositoryFactory() {
-        return getFactoryInstance(dataStoreEntityManager);
+        return getFactoryInstance(dataStoreOperation);
     }
 
-    public DataStoreEntityManager getDataStoreEntityManager() {
-        return dataStoreEntityManager;
+    public DataStoreOperation getDataStoreOperation() {
+        return dataStoreOperation;
     }
 
-    public void setDataStoreEntityManager(DataStoreEntityManager dataStoreEntityManager) {
-        this.dataStoreEntityManager = dataStoreEntityManager;
+    public void setDataStoreOperation(DataStoreOperation dataStoreOperation) {
+        this.dataStoreOperation = dataStoreOperation;
     }
 
-    protected RepositoryFactorySupport getFactoryInstance(DataStoreEntityManager operations) {
+    protected RepositoryFactorySupport getFactoryInstance(DataStoreOperation operations) {
         return new DataStoreRepositoryFactory(operations);
     }
 
@@ -42,10 +42,10 @@ public class DataStoreRepositoryFactoryBean<T extends Repository<S, ID>, S, ID e
     public void afterPropertiesSet() {
 
         super.afterPropertiesSet();
-        Assert.notNull(dataStoreEntityManager, "Datastore template must not be null!");
+        Assert.notNull(dataStoreOperation, "Datastore template must not be null!");
 
        /* if (!mappingContextConfigured) {
-            setMappingContext(dataStoreEntityManager.getConverter().getMappingContext());
+            setMappingContext(dataStoreOperation.getConverter().getMappingContext());
         }*/
     }
 }

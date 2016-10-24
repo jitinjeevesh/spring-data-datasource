@@ -1,7 +1,6 @@
 package com.virgin.dao.repository.query;
 
-import com.virgin.dao.DataStoreEntityMetaData;
-import com.virgin.dao.Kind;
+import com.virgin.dao.core.mapping.Kind;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;

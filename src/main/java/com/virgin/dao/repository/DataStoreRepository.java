@@ -1,4 +1,4 @@
-package com.virgin.dao;
+package com.virgin.dao.repository;
 
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.PagingAndSortingRepository;

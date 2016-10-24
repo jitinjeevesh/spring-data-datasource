@@ -1,7 +1,6 @@
 package com.virgin.dao.repository.support;
 
-import com.virgin.dao.DataStoreEntityMetaData;
-import com.virgin.dao.MappingDataStoreEntityInformation;
+import com.virgin.dao.repository.query.DataStoreEntityMetaData;
 import com.virgin.dao.repository.query.DefaultDataStoreEntityMetaData;
 import org.springframework.data.repository.core.support.AbstractEntityInformation;
 import org.springframework.util.Assert;

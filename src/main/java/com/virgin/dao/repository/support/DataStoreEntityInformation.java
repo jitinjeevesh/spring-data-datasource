@@ -1,6 +1,6 @@
 package com.virgin.dao.repository.support;
 
-import com.virgin.dao.DataStoreEntityMetaData;
+import com.virgin.dao.repository.query.DataStoreEntityMetaData;
 import org.springframework.data.repository.core.EntityInformation;
 
 import java.io.Serializable;

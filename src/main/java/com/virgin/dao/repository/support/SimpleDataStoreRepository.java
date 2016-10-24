@@ -1,6 +1,7 @@
-package com.virgin.dao;
+package com.virgin.dao.repository.support;
 
-import com.virgin.dao.repository.support.DataStoreEntityInformation;
+import com.virgin.dao.core.DataStoreOperation;
+import com.virgin.dao.repository.DataStoreRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -8,17 +9,16 @@ import org.springframework.util.Assert;
 
 import java.io.Serializable;
 
-//@Repository
 public class SimpleDataStoreRepository<T, ID extends Serializable> implements DataStoreRepository<T, ID> {
 
     private static final String ID_MUST_NOT_BE_NULL = "The given id must not be null!";
-    private final DataStoreEntityManager dataStoreEntityManager;
+    private final DataStoreOperation dataStoreOperation;
     private final DataStoreEntityInformation<T, ID> dataStoreEntityInformation;
 
-    public SimpleDataStoreRepository(DataStoreEntityInformation<T, ID> dataStoreEntityInformation, DataStoreEntityManager dataStoreEntityManager) {
-        Assert.notNull(dataStoreEntityManager);
+    public SimpleDataStoreRepository(DataStoreEntityInformation<T, ID> dataStoreEntityInformation, DataStoreOperation dataStoreOperation) {
+        Assert.notNull(dataStoreOperation);
         Assert.notNull(dataStoreEntityInformation);
-        this.dataStoreEntityManager = dataStoreEntityManager;
+        this.dataStoreOperation = dataStoreOperation;
         this.dataStoreEntityInformation = dataStoreEntityInformation;
     }
 
@@ -35,7 +35,7 @@ public class SimpleDataStoreRepository<T, ID extends Serializable> implements Da
     public T findOne(ID id) {
         Assert.notNull(id, ID_MUST_NOT_BE_NULL);
         Class<T> domainType = getKindClass();
-        return dataStoreEntityManager.load(domainType, (Long) id);
+        return dataStoreOperation.load(domainType, (Long) id);
     }
 
     @Override
