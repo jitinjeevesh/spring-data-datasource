@@ -1,18 +1,22 @@
-package com.virgin.dao.core.converter;
+package com.virgin.dao.core.convert;
 
 import com.google.cloud.datastore.Entity;
 import com.virgin.dao.mapping.DataStorePersistentEntity;
 import com.virgin.dao.mapping.DataStorePersistentProperty;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.mapping.context.MappingContext;
+import org.springframework.data.util.ClassTypeInformation;
 import org.springframework.data.util.TypeInformation;
 
 public class MappingDataStoreConverter extends AbstractDataStoreConverter {
 
+
     protected final MappingContext<? extends DataStorePersistentEntity<?>, DataStorePersistentProperty> mappingContext;
+    protected DataStoreTypeMapper dataStoreTypeMapper;
 
     public MappingDataStoreConverter(MappingContext<? extends DataStorePersistentEntity<?>, DataStorePersistentProperty> mappingContext) {
         this.mappingContext = mappingContext;
+        this.dataStoreTypeMapper = new DataStoreTypeMapperImpl(DataStoreTypeMapperImpl.DEFAULT_TYPE_KEY, mappingContext);
     }
 
     @Override
@@ -37,6 +41,20 @@ public class MappingDataStoreConverter extends AbstractDataStoreConverter {
 
     @Override
     public <R extends Object> R read(Class<R> type, Entity source) {
+        /*Object entity;
+        try {
+            Constructor<?> constructor = type.getConstructor();
+            entity = constructor.newInstance();
+        } catch (Exception exp) {
+            exp.printStackTrace();
+        }*/
+
+        TypeInformation<R> typeInformation = ClassTypeInformation.from(type);
+        TypeInformation<? extends R> typeToUse = dataStoreTypeMapper.readType(source, typeInformation);
+        Class<? extends R> rawType = typeToUse.getType();
+        if (Entity.class.isAssignableFrom(rawType)) {
+            System.out.println(source);
+        }
         return null;
     }
 

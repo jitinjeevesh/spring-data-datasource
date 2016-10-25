@@ -30,9 +30,6 @@ public class DataStorePersistentPropertyImpl extends AnnotationBasedPersistentPr
     public DataStorePersistentPropertyImpl(Field field, PropertyDescriptor propertyDescriptor, PersistentEntity<?, DataStorePersistentProperty> owner, SimpleTypeHolder simpleTypeHolder, FieldNamingStrategy fieldNamingStrategy) {
         super(field, propertyDescriptor, owner, simpleTypeHolder);
         this.fieldNamingStrategy = fieldNamingStrategy == null ? PropertyNameFieldNamingStrategy.INSTANCE : fieldNamingStrategy;
-//        if (!isIdProperty()) {
-//            throw new IDPropertyNotFoundException("No ID property found in " + getOwner());
-//        }
     }
 
     //TODO:We can define custom id implementation here. Right now we restrict only for @Id and id field name.
@@ -58,7 +55,6 @@ public class DataStorePersistentPropertyImpl extends AnnotationBasedPersistentPr
     @Override
     public String getFieldName() {
         if (isIdProperty()) {
-
             if (owner == null) {
                 return ID_FIELD_NAME;
             }
@@ -79,8 +75,7 @@ public class DataStorePersistentPropertyImpl extends AnnotationBasedPersistentPr
         String fieldName = fieldNamingStrategy.getFieldName(this);
 
         if (!StringUtils.hasText(fieldName)) {
-            throw new MappingException(String.format("Invalid (null or empty) field name returned for property %s by %s!",
-                    this, fieldNamingStrategy.getClass()));
+            throw new MappingException(String.format("Invalid (null or empty) field name returned for property %s by %s!", this, fieldNamingStrategy.getClass()));
         }
 
         return fieldName;

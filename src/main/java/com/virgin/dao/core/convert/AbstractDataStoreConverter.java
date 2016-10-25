@@ -1,4 +1,4 @@
-package com.virgin.dao.core.converter;
+package com.virgin.dao.core.convert;
 
 import org.springframework.beans.factory.InitializingBean;
 

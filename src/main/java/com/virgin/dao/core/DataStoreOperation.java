@@ -1,6 +1,6 @@
 package com.virgin.dao.core;
 
-import com.virgin.dao.core.converter.DataStoreConverter;
+import com.virgin.dao.core.convert.DataStoreConverter;
 
 public interface DataStoreOperation {
 

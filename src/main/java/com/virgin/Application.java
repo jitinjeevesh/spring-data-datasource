@@ -1,7 +1,5 @@
 package com.virgin;
 
-import com.jmethods.catatumbo.EntityManager;
-import com.jmethods.catatumbo.EntityManagerFactory;
 import com.virgin.dao.repository.config.EnableDataStoreRepositories;
 import com.virgin.example.KindRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +10,14 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @EnableDataStoreRepositories
-@ComponentScan({"sample", "com.virgin", "com.virgin.dao.repository.cdi"})
+@ComponentScan({"sample", "com.virgin", "com.virgin.dao"})
 public class Application {
 
     @Autowired
     private KindRepository kindRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public static void main(String[] args) throws InterruptedException {
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
@@ -28,6 +29,7 @@ public class Application {
     public void init() {
         kindRepository.delete(2l);
         kindRepository.findOne(4876109476790272l);
+
 //        EntityManagerFactory emf = EntityManagerFactory.getInstance();
 //        EntityManager em = emf.createDefaultEntityManager();
 //        String s = "devBackups/datastore_backup_BackupInto_devBackups_2016_10_18_UserBrandInfo/1570308648017407187851861401ABA/output-9";

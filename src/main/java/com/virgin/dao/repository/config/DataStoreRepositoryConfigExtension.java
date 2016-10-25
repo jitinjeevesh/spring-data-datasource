@@ -2,7 +2,7 @@ package com.virgin.dao.repository.config;
 
 import com.virgin.dao.core.DataStoreTemplate;
 import com.virgin.dao.core.SimpleDataStoredFactory;
-import com.virgin.dao.core.converter.MappingDataStoreConverter;
+import com.virgin.dao.core.convert.MappingDataStoreConverter;
 import com.virgin.dao.core.mapping.Kind;
 import com.virgin.dao.mapping.DataStoreMappingContext;
 import com.virgin.dao.repository.DataStoreRepository;

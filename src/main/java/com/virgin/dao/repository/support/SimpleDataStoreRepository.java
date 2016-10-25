@@ -31,14 +31,10 @@ public class SimpleDataStoreRepository<T, ID extends Serializable> implements Da
         return dataStoreEntityInformation.getIdType();
     }
 
-    //TODO:Change this method for string also.
     @Override
     public T findOne(ID id) {
         Assert.notNull(id, ID_MUST_NOT_BE_NULL);
-        System.out.println("..................................................");
-        System.out.println(getIDClass());
         Class<T> domainType = getKindClass();
-        System.out.println(getKindClass());
         if (id instanceof Long)
             return dataStoreOperation.load(domainType, (Long) id);
         else
