@@ -16,9 +16,6 @@ public class Application {
     @Autowired
     private KindRepository kindRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
     public static void main(String[] args) throws InterruptedException {
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
         Application mainObj = context.getBean(Application.class);
