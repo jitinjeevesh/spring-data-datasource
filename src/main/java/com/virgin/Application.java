@@ -12,7 +12,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @EnableDataStoreRepositories
-@ComponentScan({"sample", "com.virgin","com.virgin.dao.repository.cdi"})
+@ComponentScan({"sample", "com.virgin", "com.virgin.dao.repository.cdi"})
 public class Application {
 
     @Autowired
@@ -27,8 +27,9 @@ public class Application {
 
     public void init() {
         kindRepository.delete(2l);
-        EntityManagerFactory emf = EntityManagerFactory.getInstance();
-        EntityManager em = emf.createDefaultEntityManager();
+        kindRepository.findOne(4876109476790272l);
+//        EntityManagerFactory emf = EntityManagerFactory.getInstance();
+//        EntityManager em = emf.createDefaultEntityManager();
 //        String s = "devBackups/datastore_backup_BackupInto_devBackups_2016_10_18_UserBrandInfo/1570308648017407187851861401ABA/output-9";
 //        System.out.println(getEntityByFolderName(s));
         /*Settings settings = em.load(Settings.class, 4876109476790272l);

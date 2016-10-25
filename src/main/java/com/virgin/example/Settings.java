@@ -1,10 +1,13 @@
 package com.virgin.example;
 
 import com.virgin.dao.core.mapping.Kind;
+import org.springframework.data.annotation.Id;
 
 @Kind
 public class Settings {
 
+    @Id
+    private Long id;
     private String environment;
     private String feature;
     private Integer value;
@@ -40,6 +43,14 @@ public class Settings {
 
     public void setValue(Integer value) {
         this.value = value;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override

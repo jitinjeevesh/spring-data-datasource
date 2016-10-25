@@ -6,7 +6,7 @@ import com.google.cloud.datastore.DatastoreOptions;
 import com.virgin.dao.core.exception.DataStoreEntityManagerFactoryException;
 
 /**
- * A factory class for producing {@link DataStoreEntityManager}s.
+ * A factory class for producing {@link Datastore}s.
  *
  * @author Jeevesh Pandey
  */

@@ -6,36 +6,21 @@ import com.jmethods.catatumbo.impl.EntityMetadata;
 import com.virgin.dao.core.converter.DataStoreConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 public class DataStoreTemplate implements DataStoreOperation {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataStoreTemplate.class);
+
+    private static final String DATASTORE_MUST_NOT_BE_NULL = "Data store object must not be null";
+
     private final DataStoreConverter dataStoreConverter;
-    private DataStoreEntityManager dataStoreEntityManager;
-    //TODO:Remove this field. This is just for testing purpose.
-    private String name;
+    private Datastore datastore;
 
-//    private DatastoreReader nativeReader = null;
-
-    public DataStoreTemplate() {
-        this(null, null);
-    }
-
-    //TODO:Temp. use only
-    public DataStoreTemplate(DataStoreEntityManager dataStoreEntityManager) {
-        this(dataStoreEntityManager, null);
-        System.out.println("Inside DataStoreTemplate constructor");
-        System.out.println(dataStoreEntityManager.test());
-    }
-
-    public DataStoreTemplate(DataStoreEntityManager dataStoreEntityManager, DataStoreConverter dataStoreConverter) {
-        LOG.info("Constructor initialized for : DataStoreTemplate");
-        this.dataStoreEntityManager = dataStoreEntityManager;
+    public DataStoreTemplate(Datastore datastore, DataStoreConverter dataStoreConverter) {
+        Assert.notNull(datastore, DATASTORE_MUST_NOT_BE_NULL);
+        this.datastore = datastore;
         this.dataStoreConverter = dataStoreConverter;
-        System.out.println("Inside DataStoreTemplate constructor");
-        System.out.println(dataStoreEntityManager.test());
-        System.out.println(".............................................................");
-        System.out.println(dataStoreConverter.test());
     }
 
     @Override
@@ -55,11 +40,13 @@ public class DataStoreTemplate implements DataStoreOperation {
     @Override
     public <E> E load(Class<E> entityClass, long id) {
         try {
-           /* EntityMetadata entityMetadata = EntityIntrospector.introspect(entityClass);
-            Key key = datastore.newKeyFactory().kind(entityMetadata.getKind()).newKey(id);
-            Entity nativeEntity = nativeReader.get(key);*/
+            System.out.println(entityClass.getSimpleName());
+            KeyFactory keyFactory = datastore.newKeyFactory().kind(entityClass.getSimpleName());
+            Key key = keyFactory.newKey(id);
+            Entity entity = datastore.get(key);
             System.out.println("......................................................");
-//            System.out.println(nativeEntity);
+            System.out.println(entity);
+            System.out.println("......................................................");
         } catch (DatastoreException exp) {
             exp.printStackTrace();
         }

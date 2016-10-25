@@ -11,7 +11,6 @@ import org.springframework.util.StringUtils;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
-import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,17 +29,19 @@ public class DataStorePersistentPropertyImpl extends AnnotationBasedPersistentPr
 
     public DataStorePersistentPropertyImpl(Field field, PropertyDescriptor propertyDescriptor, PersistentEntity<?, DataStorePersistentProperty> owner, SimpleTypeHolder simpleTypeHolder, FieldNamingStrategy fieldNamingStrategy) {
         super(field, propertyDescriptor, owner, simpleTypeHolder);
-        this.fieldNamingStrategy = fieldNamingStrategy == null ? PropertyNameFieldNamingStrategy.INSTANCE
-                : fieldNamingStrategy;
-       /* if (isIdProperty() && getFieldName() != ID_FIELD_NAME) {
-            LOG.warn("Customizing field name for id property not allowed! Custom name will not be considered!");
-        }*/
+        this.fieldNamingStrategy = fieldNamingStrategy == null ? PropertyNameFieldNamingStrategy.INSTANCE : fieldNamingStrategy;
+//        if (!isIdProperty()) {
+//            throw new IDPropertyNotFoundException("No ID property found in " + getOwner());
+//        }
     }
 
     //TODO:We can define custom id implementation here. Right now we restrict only for @Id and id field name.
     @Override
     public boolean isIdProperty() {
-        return super.isIdProperty() || SUPPORTED_ID_PROPERTY_NAMES.contains(getName()) && !hasExplicitFieldName();
+        if (super.isIdProperty()) {
+            return true;
+        }
+        return SUPPORTED_ID_PROPERTY_NAMES.contains(getName()) && !hasExplicitFieldName();
 
     }
 
