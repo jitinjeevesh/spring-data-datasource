@@ -1,6 +1,7 @@
 package com.virgin.dao.repository.support;
 
 import com.virgin.dao.core.DataStoreOperation;
+import com.virgin.dao.core.exception.IDPropertyNotFoundException;
 import com.virgin.dao.repository.DataStoreRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,8 +35,14 @@ public class SimpleDataStoreRepository<T, ID extends Serializable> implements Da
     @Override
     public T findOne(ID id) {
         Assert.notNull(id, ID_MUST_NOT_BE_NULL);
+        System.out.println("..................................................");
+        System.out.println(getIDClass());
         Class<T> domainType = getKindClass();
-        return dataStoreOperation.load(domainType, (Long) id);
+        System.out.println(getKindClass());
+        if (id instanceof Long)
+            return dataStoreOperation.load(domainType, (Long) id);
+        else
+            return dataStoreOperation.load(domainType, (String) id);
     }
 
     @Override

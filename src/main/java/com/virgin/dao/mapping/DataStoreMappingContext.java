@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 
-@Component
 public class DataStoreMappingContext extends AbstractMappingContext<DataStorePersistentEntityImpl<?>, DataStorePersistentProperty>
         implements ApplicationContextAware {
 

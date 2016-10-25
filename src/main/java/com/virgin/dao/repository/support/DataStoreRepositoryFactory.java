@@ -1,6 +1,10 @@
 package com.virgin.dao.repository.support;
 
 import com.virgin.dao.core.DataStoreOperation;
+import com.virgin.dao.mapping.DataStorePersistentEntity;
+import com.virgin.dao.mapping.DataStorePersistentProperty;
+import org.springframework.data.mapping.context.MappingContext;
+import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
@@ -12,30 +16,23 @@ import java.io.Serializable;
 
 public class DataStoreRepositoryFactory extends RepositoryFactorySupport {
 
-    //    private final MappingContext<? extends DataStoreEntityMetaData<?>, DataStorePersistentProperty> mappingContext;
+    private final MappingContext<? extends DataStorePersistentEntity<?>, DataStorePersistentProperty> mappingContext;
     private final DataStoreOperation dataStoreOperation;
 
     public DataStoreRepositoryFactory(DataStoreOperation dataStoreOperation) {
         Assert.notNull(dataStoreOperation, "DataStoreOperation can not be null inside DataStoreRepositoryFactory");
         this.dataStoreOperation = dataStoreOperation;
-//        this.mappingContext = dataStoreOperation.getConverter().getMappingContext();
+        this.mappingContext = dataStoreOperation.getConverter().getMappingContext();
     }
 
     @Override
     public <T, ID extends Serializable> DataStoreEntityInformation<T, ID> getEntityInformation(Class<T> domainClass) {
-        return (DataStoreEntityInformation<T, ID>) DataStoreEntityInformationSupport.getEntityInformation(domainClass);
-//        return getEntityInformation(domainClass, null);
-    }
-
-/*    private <T, ID extends Serializable> DataStoreEntityInformation<T, ID> getEntityInformation(Class<T> domainClass, RepositoryInformation information) {
-        DataStoreEntityMetaData<?> entity = mappingContext.getPersistentEntity(domainClass);
-        if (entity == null) {
+        DataStorePersistentEntity<?> dataStorePersistentEntity = mappingContext.getPersistentEntity(domainClass);
+        if (dataStorePersistentEntity == null) {
             throw new MappingException(String.format("Could not lookup mapping metadata for domain class %s!", domainClass.getName()));
         }
-//        return (DataStoreEntityInformation<T, ID>) DataStoreEntityInformationSupport.getEntityInformation(domainClass);
-        return new MappingDataStoreEntityInformation<T, ID>(domainClass);
-    }*/
-
+        return (DataStoreEntityInformation<T, ID>) DataStoreEntityInformationSupport.getEntityInformation((DataStorePersistentEntity<T>) dataStorePersistentEntity);
+    }
 
     @Override
     protected Object getTargetRepository(RepositoryInformation information) {
