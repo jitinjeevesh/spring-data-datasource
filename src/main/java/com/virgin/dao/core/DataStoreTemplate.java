@@ -1,9 +1,7 @@
 package com.virgin.dao.core;
 
 import com.google.cloud.datastore.*;
-import com.jmethods.catatumbo.impl.EntityIntrospector;
-import com.jmethods.catatumbo.impl.EntityMetadata;
-import com.virgin.dao.core.converter.DataStoreConverter;
+import com.virgin.dao.core.convert.DataStoreConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;

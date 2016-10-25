@@ -1,4 +1,4 @@
-package com.virgin.dao.core.converter;
+package com.virgin.dao.core.convert;
 
 import com.google.cloud.datastore.Entity;
 import org.springframework.data.convert.EntityWriter;

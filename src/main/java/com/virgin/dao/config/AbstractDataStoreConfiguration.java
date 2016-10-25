@@ -1,10 +1,7 @@
 package com.virgin.dao.config;
 
-import com.google.cloud.datastore.Datastore;
-import com.google.cloud.datastore.DatastoreOptions;
-import com.virgin.dao.core.DataStoreTemplate;
 import com.virgin.dao.core.mapping.Kind;
-import com.virgin.dao.core.converter.MappingDataStoreConverter;
+import com.virgin.dao.core.convert.MappingDataStoreConverter;
 import com.virgin.dao.mapping.DataStoreMappingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
