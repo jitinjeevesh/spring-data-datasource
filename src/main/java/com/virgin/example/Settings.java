@@ -56,6 +56,7 @@ public class Settings {
     @Override
     public String toString() {
         return "Settings{" +
+                "id=" + id +
                 ", environment='" + environment + '\'' +
                 ", feature='" + feature + '\'' +
                 ", value=" + value +
