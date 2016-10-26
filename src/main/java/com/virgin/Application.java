@@ -1,7 +1,10 @@
 package com.virgin;
 
+import com.jmethods.catatumbo.EntityManager;
+import com.jmethods.catatumbo.EntityManagerFactory;
 import com.virgin.dao.repository.config.EnableDataStoreRepositories;
 import com.virgin.example.KindRepository;
+import com.virgin.example.Settings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,10 +28,15 @@ public class Application {
 
     public void init() {
         kindRepository.delete(2l);
-        kindRepository.findOne(4876109476790272l);
+        Settings settings = kindRepository.findOne(4876109476790272l);
+        System.out.println("Fetching settings details");
+        System.out.println(settings.getId());
+        System.out.println(settings.getFeature());
+        System.out.println(settings.getValue());
+        System.out.println(settings.getEnvironment());
 
-//        EntityManagerFactory emf = EntityManagerFactory.getInstance();
-//        EntityManager em = emf.createDefaultEntityManager();
+        EntityManagerFactory emf = EntityManagerFactory.getInstance();
+        EntityManager em = emf.createDefaultEntityManager();
 //        String s = "devBackups/datastore_backup_BackupInto_devBackups_2016_10_18_UserBrandInfo/1570308648017407187851861401ABA/output-9";
 //        System.out.println(getEntityByFolderName(s));
         /*Settings settings = em.load(Settings.class, 4876109476790272l);

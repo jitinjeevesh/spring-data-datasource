@@ -1,10 +1,13 @@
 package com.virgin.dao.core;
 
 import com.google.cloud.datastore.*;
+import com.jmethods.catatumbo.EntityManagerException;
 import com.virgin.dao.core.convert.DataStoreConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
+
+import java.lang.reflect.Constructor;
 
 public class DataStoreTemplate implements DataStoreOperation {
 
@@ -42,9 +45,21 @@ public class DataStoreTemplate implements DataStoreOperation {
             KeyFactory keyFactory = datastore.newKeyFactory().kind(entityClass.getSimpleName());
             Key key = keyFactory.newKey(id);
             Entity entity = datastore.get(key);
+
+
+            //Binding
+           /* try {
+                Constructor<?> constructor = entityClass.getConstructor();
+                Object o = constructor.newInstance();
+            } catch (Exception exp) {
+                exp.printStackTrace();
+            }*/
+
+            E convertedEntity = dataStoreConverter.read(entityClass, entity);
             System.out.println("......................................................");
             System.out.println(entity);
             System.out.println("......................................................");
+            return convertedEntity;
         } catch (DatastoreException exp) {
             exp.printStackTrace();
         }
