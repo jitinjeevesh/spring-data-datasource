@@ -1,15 +1,22 @@
 package com.virgin;
 
+import com.google.cloud.datastore.*;
+import com.google.cloud.datastore.Entity;
 import com.jmethods.catatumbo.EntityManager;
 import com.jmethods.catatumbo.EntityManagerFactory;
 import com.virgin.dao.repository.config.EnableDataStoreRepositories;
-import com.virgin.example.KindRepository;
 import com.virgin.example.Settings;
+import com.virgin.example.SettingsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
+import java.util.Date;
+import java.util.List;
 
 @SpringBootApplication
 @EnableDataStoreRepositories
@@ -17,7 +24,7 @@ import org.springframework.context.annotation.ComponentScan;
 public class Application {
 
     @Autowired
-    private KindRepository kindRepository;
+    private SettingsRepository settingsRepository;
 
     public static void main(String[] args) throws InterruptedException {
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
@@ -27,18 +34,30 @@ public class Application {
 
 
     public void init() {
-        kindRepository.delete(2l);
-        Settings settings = kindRepository.findOne(4876109476790272l);
-        System.out.println("Fetching settings details");
-        System.out.println(settings.getId());
-        System.out.println(settings.getFeature());
-        System.out.println(settings.getValue());
-        System.out.println(settings.getEnvironment());
+
+        Settings settings = new Settings();
+        settings.setValue(1);
+        settings.setFeature("FEATURE");
+        settings.setEnvironment("DEVELOPMENT");
+        settings.setDefaultValue(true);
+        settingsRepository.save(settings);
+        //TODO:Datastore count
+//        System.out.println(settingsRepository.count());
+
+        //TODO:Page request
+       /* Long startTime = new Date().getTime();
+        Page<Settings> settingses = settingsRepository.findAll(new PageRequest(2, 3));
+        System.out.println("............................Settings records..................................................");
+        System.out.println(settingses.getContent());
+        System.out.println(settingses.hasNext());
+
+        Long endTime = new Date().getTime();
+        System.out.println("::::::::::::::::::::::::::::::Time taken by read::::::::::::::::::::::::::::::::::::::::");
+        System.out.println(endTime - startTime);
+        System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");*/
 
         EntityManagerFactory emf = EntityManagerFactory.getInstance();
         EntityManager em = emf.createDefaultEntityManager();
-//        String s = "devBackups/datastore_backup_BackupInto_devBackups_2016_10_18_UserBrandInfo/1570308648017407187851861401ABA/output-9";
-//        System.out.println(getEntityByFolderName(s));
         /*Settings settings = em.load(Settings.class, 4876109476790272l);
         System.out.println(settings);*/
 
@@ -114,6 +133,6 @@ public class Application {
 
 //        Entity entity2 = datastore.get(keyFactory.newKey("CREATE_USER"));
 //        System.out.println("................................");
-//        System.out.println(entity2);
+//        System.out.println(entitresultClassy2);
     }
 }

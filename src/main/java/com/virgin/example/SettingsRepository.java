@@ -2,5 +2,5 @@ package com.virgin.example;
 
 import com.virgin.dao.repository.DataStoreRepository;
 
-public interface KindRepository extends DataStoreRepository<Settings, Long> {
+public interface SettingsRepository extends DataStoreRepository<Settings, Long> {
 }

@@ -1,14 +1,15 @@
 package com.virgin.dao.repository.support;
 
 import com.virgin.dao.core.DataStoreOperation;
-import com.virgin.dao.core.exception.IDPropertyNotFoundException;
 import com.virgin.dao.repository.DataStoreRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class SimpleDataStoreRepository<T, ID extends Serializable> implements DataStoreRepository<T, ID> {
 
@@ -48,12 +49,15 @@ public class SimpleDataStoreRepository<T, ID extends Serializable> implements Da
 
     @Override
     public Page<T> findAll(Pageable pageable) {
-        return null;
+        Long count = count();
+        List<T> list = dataStoreOperation.findAll(getKindClass(), pageable);
+        return new PageImpl<T>(list, pageable, count);
     }
 
     @Override
     public <S extends T> S save(S entity) {
-        System.out.println("Entity fetched successfully");
+        Assert.notNull(entity, "Entity must not be null!");
+        dataStoreOperation.insert(entity, getKindClass());
         return null;
     }
 
@@ -68,8 +72,8 @@ public class SimpleDataStoreRepository<T, ID extends Serializable> implements Da
     }
 
     @Override
-    public Iterable<T> findAll() {
-        return null;
+    public List<T> findAll() {
+        return dataStoreOperation.findAll(getKindClass());
     }
 
     @Override
@@ -79,7 +83,7 @@ public class SimpleDataStoreRepository<T, ID extends Serializable> implements Da
 
     @Override
     public long count() {
-        return 0;
+        return dataStoreOperation.count(getKindClass());
     }
 
     @Override

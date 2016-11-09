@@ -49,6 +49,10 @@ public class DataStorePersistentEntityImpl<T> extends BasicPersistentEntity<T, D
         context.setRootObject(applicationContext);
     }
 
+    public String getKind() {
+        return expression == null ? kind : expression.getValue(context, String.class);
+    }
+
     private static Expression detectExpression(Kind kind) {
         if (kind == null) {
             return null;
