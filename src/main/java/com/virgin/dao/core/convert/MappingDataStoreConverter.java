@@ -1,7 +1,7 @@
 package com.virgin.dao.core.convert;
 
-import com.google.cloud.datastore.Entity;
-import com.google.cloud.datastore.Key;
+import com.google.cloud.datastore.*;
+import com.jmethods.catatumbo.impl.PropertyConverter;
 import com.virgin.dao.mapping.DataStorePersistentEntity;
 import com.virgin.dao.mapping.DataStorePersistentProperty;
 import org.springframework.core.convert.ConversionService;
@@ -16,6 +16,7 @@ import org.springframework.data.util.TypeInformation;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.Constructor;
+import java.util.Date;
 
 public class MappingDataStoreConverter extends AbstractDataStoreConverter {
 
@@ -33,6 +34,11 @@ public class MappingDataStoreConverter extends AbstractDataStoreConverter {
     }
 
     @Override
+    public MappingContext<? extends DataStorePersistentEntity<?>, DataStorePersistentProperty> getMappingContext() {
+        return mappingContext;
+    }
+
+    @Override
     public Object convertToDataStoreType(Object obj) {
         return null;
     }
@@ -42,9 +48,42 @@ public class MappingDataStoreConverter extends AbstractDataStoreConverter {
         return null;
     }
 
+    //TODO:Refactor this method
     @Override
-    public MappingContext<? extends DataStorePersistentEntity<?>, DataStorePersistentProperty> getMappingContext() {
-        return mappingContext;
+    public BaseEntity<?> convertToDataStoreType(Object obj, Key key) {
+        final BaseEntity.Builder<?, ?> entityBuilder = Entity.newBuilder(key);
+        Class<?> entityType = obj.getClass();
+        TypeInformation<?> type = ClassTypeInformation.from(entityType);
+        DataStorePersistentEntity<?> dataStorePersistentEntity = mappingContext.getPersistentEntity(entityType);
+        final PersistentPropertyAccessor accessor = dataStorePersistentEntity.getPropertyAccessor(obj);
+        final DataStorePersistentProperty idProperty = dataStorePersistentEntity.getIdProperty();
+        dataStorePersistentEntity.doWithProperties(new PropertyHandler<DataStorePersistentProperty>() {
+            public void doWithPersistentProperty(DataStorePersistentProperty prop) {
+                ValueBuilder<?, ?, ?> valueBuilder = null;
+
+                if (prop.equals(idProperty) || !prop.isWritable()) {
+                    return;
+                }
+                Object propertyObj = accessor.getProperty(prop);
+                System.out.println("......................property value............................");
+                System.out.println(propertyObj);
+                if (propertyObj == null) {
+                    valueBuilder = NullValue.newBuilder();
+                } else if (propertyObj instanceof String) {
+                    valueBuilder = StringValue.newBuilder((String) propertyObj);
+                } else if (propertyObj instanceof Long) {
+                    valueBuilder = LongValue.newBuilder((Long) propertyObj);
+                } else if (propertyObj instanceof Integer) {
+                    valueBuilder = LongValue.newBuilder((int) propertyObj);
+                } else if (propertyObj instanceof Boolean) {
+                    valueBuilder = BooleanValue.newBuilder((Boolean) propertyObj);
+                }
+                Value<?> datastoreValue = valueBuilder.build();
+                entityBuilder.set(prop.getFieldName(), datastoreValue);
+            }
+        });
+        BaseEntity<?> baseEntity = entityBuilder.build();
+        return baseEntity;
     }
 
     @Override
@@ -68,40 +107,24 @@ public class MappingDataStoreConverter extends AbstractDataStoreConverter {
         if (Entity.class.isAssignableFrom(rawType)) {
             System.out.println(source);
         }
-
         final DataStorePersistentEntity<R> persistentEntity = (DataStorePersistentEntity<R>) mappingContext.getPersistentEntity(typeToUse);
-
         final DefaultSpELExpressionEvaluator evaluator = new DefaultSpELExpressionEvaluator(source, spELContext);
+
+        //TODO:Needs POC on this.Used by spring data to instantiate entity.
+//        ParameterValueProvider<DataStorePersistentProperty> provider1 = getParameterProvider(entity, dbo, evaluator, path);
 //        EntityInstantiator instantiator = instantiators.getInstantiatorFor(persistentEntity);
 //        R newInstance = instantiator.createInstance(persistentEntity, provider);
 //        DataStorePropertyValueProvider provider = new DataStorePropertyValueProvider(source, evaluator);
 
-        DataStorePropertyValueProvider provider = new DataStorePropertyValueProvider(source, evaluator);
-
         final PersistentPropertyAccessor accessor = new ConvertingPropertyAccessor(persistentEntity.getPropertyAccessor(entity), conversionService);
-
-
-        System.out.println(".....................................>Accessor................................");
-        System.out.println(accessor);
         final DataStorePersistentProperty idProperty = persistentEntity.getIdProperty();
         final R result = entity;
-        System.out.println(".........................>Id property...................");
-        System.out.println(idProperty);
-        System.out.println(new DataStorePropertyValueProvider(source, evaluator).<Long>getPropertyValue(idProperty));
         // make sure id property is set before all other properties
-
-        System.out.println("Creating id property.");
         Object idValue = null;
-
-
-//        persistentEntity.doWithProperties(new FieldsNames(source, evaluator));
-//        System.out.println("DataStorePersistentEntity");
-//        System.out.println(persistentEntity);
         if (idProperty != null) {
             idValue = new DataStorePropertyValueProvider(source, evaluator).getPropertyValue(idProperty);
             accessor.setProperty(idProperty, idValue);
         }
-
         persistentEntity.doWithProperties(new PropertyHandler<DataStorePersistentProperty>() {
             public void doWithPersistentProperty(DataStorePersistentProperty prop) {
 
@@ -117,8 +140,6 @@ public class MappingDataStoreConverter extends AbstractDataStoreConverter {
                 accessor.setProperty(prop, new DataStorePropertyValueProvider(source, evaluator).getPropertyValue(prop));
             }
         });
-
-        System.out.println(result);
         return result;
     }
 
@@ -128,23 +149,18 @@ public class MappingDataStoreConverter extends AbstractDataStoreConverter {
     }
 
 
-    private class FieldsNames implements PropertyHandler<DataStorePersistentProperty> {
+    private class DataStoreFieldsNames implements PropertyHandler<DataStorePersistentProperty> {
 
         private final SpELExpressionEvaluator evaluator;
         private final Entity entity;
 
-        public FieldsNames(Entity entity, SpELExpressionEvaluator evaluator) {
+        public DataStoreFieldsNames(Entity entity, SpELExpressionEvaluator evaluator) {
             this.entity = entity;
             this.evaluator = evaluator;
         }
 
         @Override
         public void doWithPersistentProperty(DataStorePersistentProperty persistentProperty) {
-
-            System.out.println("...................data store persistent property....................");
-            System.out.println(persistentProperty.getFieldName());
-            System.out.println(persistentProperty.getSetter());
-            System.out.println(persistentProperty.getGetter());
             new DataStorePropertyValueProvider(entity, evaluator).getPropertyValue(persistentProperty);
         }
     }
@@ -153,7 +169,7 @@ public class MappingDataStoreConverter extends AbstractDataStoreConverter {
     private class DataStorePropertyValueProvider implements PropertyValueProvider<DataStorePersistentProperty> {
 
         private final SpELExpressionEvaluator evaluator;
-        //TODO:Instead of entity there is a class which is used for accessing and putting data in it.
+        private final DataStoreEntityAccessor entityAccessor;
         private final Entity source;
 
         public DataStorePropertyValueProvider(Entity source, SpELExpressionEvaluator evaluator) {
@@ -163,28 +179,21 @@ public class MappingDataStoreConverter extends AbstractDataStoreConverter {
 
             this.source = source;
             this.evaluator = evaluator;
+            this.entityAccessor = new DataStoreEntityAccessor(source);
         }
 
         public <T> T getPropertyValue(DataStorePersistentProperty property) {
-
             String expression = property.getSpelExpression();
             Object value = null;
             if (!property.isExplicitIdProperty()) {
-                value = expression != null ? evaluator.evaluate(expression) : source.getValue(property.getFieldName()).get();
+                value = expression != null ? evaluator.evaluate(expression) : entityAccessor.get(property);
             } else {
                 value = ((Key) source.key()).nameOrId();
             }
             if (value == null) {
                 return null;
             }
-            System.out.println(".........................>Inside class DataStorePropertyValueProvider.............................");
-            System.out.println(value);
-            System.out.println(value.getClass());
-            System.out.println(conversionService.canConvert(value.getClass(), property.getType()));
-            System.out.println("Property class type " + property.getType());
-//            return conversionService.convert(value, (Class<T>) property.getType());
             return (T) value;
-//            return readValue(value, property.getTypeInformation());
         }
     }
 }

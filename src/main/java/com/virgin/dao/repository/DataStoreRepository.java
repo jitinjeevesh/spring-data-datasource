@@ -5,7 +5,10 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
+import java.util.List;
 
 @NoRepositoryBean
 public interface DataStoreRepository<T, ID extends Serializable> extends PagingAndSortingRepository<T, ID> {
+
+    List<T> findAll();
 }

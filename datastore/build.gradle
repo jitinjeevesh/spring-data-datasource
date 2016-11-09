@@ -35,6 +35,6 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter:1.3.0.RELEASE")
     compile("org.springframework.boot:spring-boot-starter-parent:1.3.0.RELEASE")
     compile("org.springframework.boot:spring-boot-starter-integration:1.3.0.RELEASE")
-    compile 'com.google.cloud:google-cloud:0.4.0'
+    compile 'com.google.cloud:google-cloud:0.5.0'
     compile 'com.jmethods:catatumbo:0.6.1'
 }
