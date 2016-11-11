@@ -26,6 +26,6 @@ public class DataStoreEntityAccessor {
         } catch (DatastoreException exception) {
             LOG.error("No value found for" + property.getFieldName());
         }
-        return dataStoreValue != null ? dataStoreValue.get() : null;
+        return dataStoreValue;
     }
 }

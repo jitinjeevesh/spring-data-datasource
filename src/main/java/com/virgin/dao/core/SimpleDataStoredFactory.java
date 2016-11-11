@@ -10,6 +10,7 @@ import com.virgin.dao.core.exception.DataStoreEntityManagerFactoryException;
  *
  * @author Jeevesh Pandey
  */
+//TODO: Implement more factory method to create instance via JSON credentials.
 public class SimpleDataStoredFactory implements DataStoreFactory {
 
     private static final SimpleDataStoredFactory INSTANCE = new SimpleDataStoredFactory();

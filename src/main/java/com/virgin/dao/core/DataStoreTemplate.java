@@ -1,8 +1,6 @@
 package com.virgin.dao.core;
 
 import com.google.cloud.datastore.*;
-import com.jmethods.catatumbo.GeoLocation;
-import com.jmethods.catatumbo.impl.Marshaller;
 import com.virgin.dao.core.convert.DataStoreConverter;
 import com.virgin.dao.mapping.DataStorePersistentEntity;
 import com.virgin.dao.mapping.DataStorePersistentProperty;
@@ -36,14 +34,15 @@ public class DataStoreTemplate implements DataStoreOperation {
     @Override
     public <E> void insert(Object objectToSave, Class<E> entityClass) {
         //TODO:Move this entity class.
-        doInsert(entityClass.getSimpleName(), objectToSave);
+        doInsert(determineCollectionName(entityClass), objectToSave);
     }
 
+    //TODO:String type of key generation is not implemented yet.
     protected <E> void doInsert(String kindName, E objectToSave) {
         KeyFactory keyFactory = datastore.newKeyFactory().setKind(kindName);
         Key key = datastore.allocateId(keyFactory.newKey());
-        FullEntity<?> nativeEntity = (FullEntity<?>) dataStoreConverter.convertToDataStoreType(objectToSave, key);
-        datastore.add(nativeEntity);
+        /*FullEntity<?> nativeEntity = (FullEntity<?>) */dataStoreConverter.convertToDataStoreType(objectToSave, key);
+//        datastore.add(nativeEntity);
     }
 
     //TODO:Throw custom errors.
@@ -127,6 +126,7 @@ public class DataStoreTemplate implements DataStoreOperation {
         return entities;
     }
 
+    //TODO:Sort is not implemented yet.
     public <E> List<E> findAll(Class<E> entityClass, Pageable pageable) {
         List<E> entities = new ArrayList<>();
         Query<Entity> query = Query.entityQueryBuilder().kind(determineCollectionName(entityClass)).limit(pageable.getPageSize()).offset(pageable.getOffset()).build();
@@ -194,9 +194,6 @@ public class DataStoreTemplate implements DataStoreOperation {
                     queryBuilder.setBinding(bindingName,
                             Cursor.fromUrlSafe(((DatastoreCursor) bindingValue).getEncoded()));
                 }*/
-                else if (bindingValue instanceof GeoLocation) {
-                    // @ToDo no support for GeoLocation in the gcloud API
-                }
             }
         }
     }

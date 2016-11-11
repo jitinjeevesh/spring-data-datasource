@@ -1,5 +1,8 @@
 package com.virgin.dao.mapping;
 
+import com.google.cloud.datastore.*;
+import com.virgin.dao.core.convert.DataStoreMapper;
+import com.virgin.dao.core.convert.DataStoreMapperFactory;
 import com.virgin.dao.core.mapping.Column;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +14,7 @@ import org.springframework.util.StringUtils;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,6 +25,7 @@ public class DataStorePersistentPropertyImpl extends AnnotationBasedPersistentPr
     private static final String ID_FIELD_NAME = "id";
     private final FieldNamingStrategy fieldNamingStrategy;
     private static final Set<String> SUPPORTED_ID_PROPERTY_NAMES = new HashSet<String>();
+    private final DataStoreMapperFactory dataStoreMapperFactory;
 
     static {
         SUPPORTED_ID_PROPERTY_NAMES.add("id");
@@ -29,7 +34,12 @@ public class DataStorePersistentPropertyImpl extends AnnotationBasedPersistentPr
 
     public DataStorePersistentPropertyImpl(Field field, PropertyDescriptor propertyDescriptor, PersistentEntity<?, DataStorePersistentProperty> owner, SimpleTypeHolder simpleTypeHolder, FieldNamingStrategy fieldNamingStrategy) {
         super(field, propertyDescriptor, owner, simpleTypeHolder);
+        dataStoreMapperFactory = DataStoreMapperFactory.getInstance();
         this.fieldNamingStrategy = fieldNamingStrategy == null ? PropertyNameFieldNamingStrategy.INSTANCE : fieldNamingStrategy;
+    }
+
+    public DataStoreMapperFactory getDataStoreMapperFactory() {
+        return dataStoreMapperFactory;
     }
 
     //TODO:We can define custom id implementation here. Right now we restrict only for @Id and id field name.
@@ -79,6 +89,28 @@ public class DataStorePersistentPropertyImpl extends AnnotationBasedPersistentPr
         }
 
         return fieldName;
+    }
+
+    @Override
+    public DataStoreMapper getDataStoreMapper() {
+        return null;
+    }
+
+    @Override
+    public Object getConvertibleValue(Value<?> input) {
+        if (input instanceof NullValue) {
+            return null;
+        }
+        if (input instanceof ListValue) {
+            DataStoreMapper dataStoreMapper = dataStoreMapperFactory.getMapper(this.getTypeInformation());
+            return dataStoreMapper.convert(input);
+        }
+        return input;
+    }
+
+    @Override
+    public Class<? extends Value<?>> getConvertibleType() {
+        return dataStoreMapperFactory.getMapperClass(getType());
     }
 
     protected boolean hasExplicitFieldName() {
