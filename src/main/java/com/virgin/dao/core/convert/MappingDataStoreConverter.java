@@ -1,12 +1,10 @@
 package com.virgin.dao.core.convert;
 
 import com.google.cloud.datastore.*;
-import com.jmethods.catatumbo.impl.PropertyConverter;
 import com.virgin.dao.mapping.DataStorePersistentEntity;
 import com.virgin.dao.mapping.DataStorePersistentProperty;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
-import org.springframework.data.convert.EntityInstantiator;
 import org.springframework.data.mapping.PersistentPropertyAccessor;
 import org.springframework.data.mapping.PropertyHandler;
 import org.springframework.data.mapping.context.MappingContext;
@@ -16,7 +14,6 @@ import org.springframework.data.util.TypeInformation;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.Constructor;
-import java.util.Date;
 
 public class MappingDataStoreConverter extends AbstractDataStoreConverter {
 
@@ -59,26 +56,13 @@ public class MappingDataStoreConverter extends AbstractDataStoreConverter {
         final DataStorePersistentProperty idProperty = dataStorePersistentEntity.getIdProperty();
         dataStorePersistentEntity.doWithProperties(new PropertyHandler<DataStorePersistentProperty>() {
             public void doWithPersistentProperty(DataStorePersistentProperty prop) {
-                ValueBuilder<?, ?, ?> valueBuilder = null;
-
                 if (prop.equals(idProperty) || !prop.isWritable()) {
                     return;
                 }
                 Object propertyObj = accessor.getProperty(prop);
                 System.out.println("......................property value............................");
                 System.out.println(propertyObj);
-                if (propertyObj == null) {
-                    valueBuilder = NullValue.newBuilder();
-                } else if (propertyObj instanceof String) {
-                    valueBuilder = StringValue.newBuilder((String) propertyObj);
-                } else if (propertyObj instanceof Long) {
-                    valueBuilder = LongValue.newBuilder((Long) propertyObj);
-                } else if (propertyObj instanceof Integer) {
-                    valueBuilder = LongValue.newBuilder((int) propertyObj);
-                } else if (propertyObj instanceof Boolean) {
-                    valueBuilder = BooleanValue.newBuilder((Boolean) propertyObj);
-                }
-                Value<?> datastoreValue = valueBuilder.build();
+                Value<?> datastoreValue = conversionService.convert(propertyObj, prop.getConvertibleType());
                 entityBuilder.set(prop.getFieldName(), datastoreValue);
             }
         });
@@ -88,7 +72,7 @@ public class MappingDataStoreConverter extends AbstractDataStoreConverter {
 
     @Override
     public ConversionService getConversionService() {
-        return null;
+        return this.conversionService;
     }
 
     @Override
@@ -136,8 +120,11 @@ public class MappingDataStoreConverter extends AbstractDataStoreConverter {
                 if (persistentEntity.isConstructorArgument(prop)) {
                     return;
                 }
-
-                accessor.setProperty(prop, new DataStorePropertyValueProvider(source, evaluator).getPropertyValue(prop));
+                Object value = new DataStorePropertyValueProvider(source, evaluator).getPropertyValue(prop);
+                if (value != null) {
+                    Object convertedValue = prop.getConvertibleValue((Value<?>) value);
+                    accessor.setProperty(prop, convertedValue);
+                }
             }
         });
         return result;
@@ -189,9 +176,6 @@ public class MappingDataStoreConverter extends AbstractDataStoreConverter {
                 value = expression != null ? evaluator.evaluate(expression) : entityAccessor.get(property);
             } else {
                 value = ((Key) source.key()).nameOrId();
-            }
-            if (value == null) {
-                return null;
             }
             return (T) value;
         }

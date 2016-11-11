@@ -9,13 +9,11 @@ public abstract class AbstractDataStoreConverter implements DataStoreConverter, 
 
     protected final GenericConversionService conversionService;
     protected EntityInstantiators instantiators = new EntityInstantiators();
+    protected DataStoreMapperFactory dataStoreMapperFactory;
 
     public AbstractDataStoreConverter(GenericConversionService conversionService) {
         this.conversionService = conversionService == null ? new DefaultConversionService() : conversionService;
-    }
-
-    public String test() {
-        return "This is the test AbstractDataStoreConverter";
+        this.dataStoreMapperFactory = DataStoreMapperFactory.getInstance();
     }
 
     public void afterPropertiesSet() {
@@ -23,7 +21,11 @@ public abstract class AbstractDataStoreConverter implements DataStoreConverter, 
     }
 
     private void initializeConverters() {
-        conversionService.addConverter(DataStoreConverters.IntegerToLongConverter.INSTANCE);
-//        conversions.registerConvertersIn(conversionService);
+//        conversionService.addConverter(DataStoreConverters.IntegerToLongConverter.INSTANCE);
+//        conversionService.addConverter(DataStoreConverters.BooleanToBooleanValueConverter.INSTANCE);
+//        conversionService.addConverter(DataStoreConverters.IntegerToLongValueConverter.INSTANCE);
+//        conversionService.addConverter(DataStoreConverters.LongToLongValueConverter.INSTANCE);
+//        conversionService.addConverter(DataStoreConverters.StringToStringValueConverter.INSTANCE);
+        DataStoreConverters.registerConverters(conversionService);
     }
 }

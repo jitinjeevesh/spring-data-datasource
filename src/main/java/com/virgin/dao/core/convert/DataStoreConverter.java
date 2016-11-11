@@ -8,5 +8,4 @@ import org.springframework.data.convert.EntityReader;
 
 public interface DataStoreConverter extends EntityConverter<DataStorePersistentEntity<?>, DataStorePersistentProperty, Object, Entity>,
         DataStoreWriter<Object>, EntityReader<Object, Entity> {
-    String test();
 }

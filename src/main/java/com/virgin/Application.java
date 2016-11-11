@@ -1,22 +1,16 @@
 package com.virgin;
 
-import com.google.cloud.datastore.*;
-import com.google.cloud.datastore.Entity;
 import com.jmethods.catatumbo.EntityManager;
 import com.jmethods.catatumbo.EntityManagerFactory;
 import com.virgin.dao.repository.config.EnableDataStoreRepositories;
-import com.virgin.example.Settings;
 import com.virgin.example.SettingsRepository;
+import com.virgin.example.VirginRedUser;
+import com.virgin.example.VirginUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-
-import java.util.Date;
-import java.util.List;
 
 @SpringBootApplication
 @EnableDataStoreRepositories
@@ -25,6 +19,8 @@ public class Application {
 
     @Autowired
     private SettingsRepository settingsRepository;
+    @Autowired
+    private VirginUserRepository virginUserRepository;
 
     public static void main(String[] args) throws InterruptedException {
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
@@ -34,13 +30,26 @@ public class Application {
 
 
     public void init() {
-
-        Settings settings = new Settings();
+        //TODO:User
+        VirginRedUser virginRedUser = virginUserRepository.findOne(4503633047584768l);
+        System.out.println(virginRedUser.getPartnerList());
+        for (Object l : virginRedUser.getPartnerList()) {
+            System.out.println(l);
+            System.out.println(l.getClass());
+        }
+        System.out.println(virginRedUser.getRoles());
+        for (Object s : virginRedUser.getRoles()) {
+            System.out.println(s);
+            System.out.println(s.getClass());
+        }
+        System.out.println(virginRedUser);
+        //TODO:Save object
+        /*Settings settings = new Settings();
         settings.setValue(1);
         settings.setFeature("FEATURE");
         settings.setEnvironment("DEVELOPMENT");
         settings.setDefaultValue(true);
-        settingsRepository.save(settings);
+        settingsRepository.save(settings);*/
         //TODO:Datastore count
 //        System.out.println(settingsRepository.count());
 
