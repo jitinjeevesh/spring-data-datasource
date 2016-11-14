@@ -75,15 +75,10 @@ public class MappingDataStoreConverter extends AbstractDataStoreConverter {
         return this.conversionService;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <R extends Object> R read(Class<R> type, final Entity source) {
-        R entity = null;
-        try {
-            Constructor<?> constructor = type.getConstructor();
-            entity = (R) constructor.newInstance();
-        } catch (Exception exp) {
-            exp.printStackTrace();
-        }
+        R entity = (R) DataStoreUtil.instantiateObject(type);
         TypeInformation<R> typeInformation = ClassTypeInformation.from(type);
         TypeInformation<? extends R> typeToUse = dataStoreTypeMapper.readType(source, typeInformation);
 

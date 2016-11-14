@@ -3,6 +3,7 @@ package com.virgin.dao.core.convert;
 import com.google.cloud.datastore.*;
 import com.virgin.dao.core.convert.mappers.EmbeddedValueDataStoreMapper;
 import com.virgin.dao.core.convert.mappers.ListValueDataStoreMapper;
+import com.virgin.dao.core.convert.mappers.SetValueDataStoreMapper;
 import com.virgin.dao.core.mapping.Embeddable;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.convert.support.GenericConversionService;
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -87,7 +89,7 @@ public class DataStoreMapperFactory {
             } else if (type instanceof ParameterizedType) {
                 mapper = createMapper((ParameterizedType) type);
             } else {
-                throw new IllegalArgumentException(String.format("Type %s is neither a Class nor ParameterizedType", type));
+                throw new IllegalArgumentException(String.format("Type %s is neither a Class nor ParameterizeType", type));
             }
             cache.put(type, mapper);
             return mapper;
@@ -100,6 +102,8 @@ public class DataStoreMapperFactory {
         DataStoreMapper mapper;
         if (List.class.isAssignableFrom(clazz)) {
             mapper = new ListValueDataStoreMapper(conversionService, clazz);
+        } else if (Set.class.isAssignableFrom(clazz)) {
+            mapper = new SetValueDataStoreMapper(conversionService, clazz);
         } else if (clazz.isAnnotationPresent(Embeddable.class)) {
             mapper = new EmbeddedValueDataStoreMapper(conversionService, clazz);
         } else {
@@ -112,12 +116,16 @@ public class DataStoreMapperFactory {
     private DataStoreMapper createMapper(ParameterizedType type) {
         Type rawType = type.getRawType();
         if (!(rawType instanceof Class)) {
-            throw new IllegalArgumentException(String.format("Raw type of ParameterizedType is not a class: %s", type));
+            throw new IllegalArgumentException(String.format("Raw type of ParameterizeType is not a class: %s", type));
         }
         Class<?> rawClass = (Class<?>) rawType;
         DataStoreMapper mapper;
         if (List.class.isAssignableFrom(rawClass)) {
             mapper = new ListValueDataStoreMapper(conversionService, type);
+        } else if (Set.class.isAssignableFrom(rawClass)) {
+            mapper = new SetValueDataStoreMapper(conversionService, type);
+        } else if (rawClass.isAnnotationPresent(Embeddable.class)) {
+            mapper = new EmbeddedValueDataStoreMapper(conversionService, rawClass);
         } else {
             throw new RuntimeException(String.format("Unsupported type: %s", type));
         }

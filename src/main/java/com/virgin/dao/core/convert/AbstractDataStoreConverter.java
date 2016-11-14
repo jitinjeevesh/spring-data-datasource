@@ -21,11 +21,6 @@ public abstract class AbstractDataStoreConverter implements DataStoreConverter, 
     }
 
     private void initializeConverters() {
-//        conversionService.addConverter(DataStoreConverters.IntegerToLongConverter.INSTANCE);
-//        conversionService.addConverter(DataStoreConverters.BooleanToBooleanValueConverter.INSTANCE);
-//        conversionService.addConverter(DataStoreConverters.IntegerToLongValueConverter.INSTANCE);
-//        conversionService.addConverter(DataStoreConverters.LongToLongValueConverter.INSTANCE);
-//        conversionService.addConverter(DataStoreConverters.StringToStringValueConverter.INSTANCE);
         DataStoreConverters.registerConverters(conversionService);
     }
 }
