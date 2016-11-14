@@ -47,8 +47,13 @@ public class SetValueDataStoreMapper implements DataStoreMapper {
             output = (Set<Object>) DataStoreUtil.instantiateObject(setClass);
         }
         for (Value<?> item : list) {
-            Object o = conversionService.convert(item, itemClass);
-            output.add(o);
+            if (item instanceof ListValue) {
+                Object o = convert(item);
+                output.add(o);
+            } else {
+                Object o = conversionService.convert(item, itemClass);
+                output.add(o);
+            }
         }
         return output;
     }
