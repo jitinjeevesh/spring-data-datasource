@@ -1,18 +1,18 @@
 package com.virgin.dao.core.convert;
 
 import com.google.cloud.datastore.*;
+import com.virgin.dao.core.convert.mappers.EmbeddedValueDataStoreMapper;
 import com.virgin.dao.core.convert.mappers.ListValueDataStoreMapper;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.convert.converter.Converter;
+import com.virgin.dao.core.mapping.Embeddable;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.convert.support.GenericConversionService;
-import org.springframework.data.util.ClassTypeInformation;
-import org.springframework.data.util.TypeInformation;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -20,7 +20,7 @@ public class DataStoreMapperFactory {
 
     private static final DataStoreMapperFactory INSTANCE = new DataStoreMapperFactory();
     private GenericConversionService conversionService;
-    private DataStoreCache<TypeInformation<?>, DataStoreMapper> cache = null;
+    private DataStoreCache<Type, DataStoreMapper> cache = null;
     private DataStoreCache<Type, Class<? extends Value<?>>> valueMapperCache = null;
     private Lock lock;
 
@@ -67,30 +67,26 @@ public class DataStoreMapperFactory {
         return valueMapperCache.get(type);
     }
 
-    public DataStoreMapper getMapper(TypeInformation<?> type) {
+    public DataStoreMapper getMapper(Type type) {
         DataStoreMapper mapper = cache.get(type);
         if (mapper == null) {
             mapper = createCustomMappers(type);
         }
-        System.out.println(mapper);
         return mapper;
     }
 
-    private DataStoreMapper createCustomMappers(TypeInformation<?> type) {
+    private DataStoreMapper createCustomMappers(Type type) {
         lock.lock();
-        System.out.println(type.getActualType());
-        System.out.println(type.getType());
         try {
             DataStoreMapper mapper = cache.get(type);
             if (mapper != null) {
                 return mapper;
             }
-            if (type.getType() instanceof Class) {
-                mapper = createMapper(type);
-            } /*else if (type instanceof ParameterizedType) {
-                System.out.println("Inside instance of ParameterizedType");
-                mapper = createMapper((ClassTypeInformation<?>) type);
-            } */ else {
+            if (type instanceof Class) {
+                mapper = createMapper((Class<?>) type);
+            } else if (type instanceof ParameterizedType) {
+                mapper = createMapper((ParameterizedType) type);
+            } else {
                 throw new IllegalArgumentException(String.format("Type %s is neither a Class nor ParameterizedType", type));
             }
             cache.put(type, mapper);
@@ -100,13 +96,30 @@ public class DataStoreMapperFactory {
         }
     }
 
-    private DataStoreMapper createMapper(TypeInformation<?> typeInformation) {
+    private DataStoreMapper createMapper(Class<?> clazz) {
         DataStoreMapper mapper;
-        if (List.class.isAssignableFrom(typeInformation.getType())) {
-            mapper = new ListValueDataStoreMapper(conversionService, typeInformation);
+        if (List.class.isAssignableFrom(clazz)) {
+            mapper = new ListValueDataStoreMapper(conversionService, clazz);
+        } else if (clazz.isAnnotationPresent(Embeddable.class)) {
+            mapper = new EmbeddedValueDataStoreMapper(conversionService, clazz);
         } else {
             throw new RuntimeException("No Mapper found");
             //NO custom mapper found
+        }
+        return mapper;
+    }
+
+    private DataStoreMapper createMapper(ParameterizedType type) {
+        Type rawType = type.getRawType();
+        if (!(rawType instanceof Class)) {
+            throw new IllegalArgumentException(String.format("Raw type of ParameterizedType is not a class: %s", type));
+        }
+        Class<?> rawClass = (Class<?>) rawType;
+        DataStoreMapper mapper;
+        if (List.class.isAssignableFrom(rawClass)) {
+            mapper = new ListValueDataStoreMapper(conversionService, type);
+        } else {
+            throw new RuntimeException(String.format("Unsupported type: %s", type));
         }
         return mapper;
     }

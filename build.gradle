@@ -60,6 +60,7 @@ dependencies {
     compile group: 'javax.annotation', name: 'jsr250-api', version: '1.0'
     compile group: 'org.aspectj', name: 'aspectjrt', version: '1.8.9'
     compile 'com.jmethods:catatumbo:0.6.1'
+    compile "org.codehaus.jackson:jackson-mapper-asl:1.9.13"
 //    compile("org.springframework.boot:spring-boot-starter-web")
 
 //    compile("com.hazelcast:hazelcast-client:3.5.1")

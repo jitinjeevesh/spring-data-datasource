@@ -31,17 +31,20 @@ public class Application {
 
     public void init() {
         //TODO:User
-        VirginRedUser virginRedUser = virginUserRepository.findOne(4503633047584768l);
+//        VirginRedUser virginRedUser = virginUserRepository.findOne(4503633047584768l);
+        VirginRedUser virginRedUser = virginUserRepository.findOne(4503605994323968l);
         System.out.println(virginRedUser.getPartnerList());
-        for (Object l : virginRedUser.getPartnerList()) {
-            System.out.println(l);
-            System.out.println(l.getClass());
-        }
+        if (!virginRedUser.getPartnerList().isEmpty())
+            for (Object l : virginRedUser.getPartnerList()) {
+                System.out.println(l);
+                System.out.println(l.getClass());
+            }
         System.out.println(virginRedUser.getRoles());
         for (Object s : virginRedUser.getRoles()) {
             System.out.println(s);
             System.out.println(s.getClass());
         }
+        System.out.println(virginRedUser.getContactInfo());
         System.out.println(virginRedUser);
         //TODO:Save object
         /*Settings settings = new Settings();
