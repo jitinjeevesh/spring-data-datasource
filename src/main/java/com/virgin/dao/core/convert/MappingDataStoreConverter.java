@@ -121,10 +121,8 @@ public class MappingDataStoreConverter extends AbstractDataStoreConverter {
                     return;
                 }
                 Object value = new DataStorePropertyValueProvider(source, evaluator).getPropertyValue(prop);
-                if (value != null) {
-                    Object convertedValue = prop.getConvertibleValue((Value<?>) value);
-                    accessor.setProperty(prop, convertedValue);
-                }
+                Object convertedValue = prop.getConvertibleValue((Value<?>) value);
+                accessor.setProperty(prop, convertedValue);
             }
         });
         return result;

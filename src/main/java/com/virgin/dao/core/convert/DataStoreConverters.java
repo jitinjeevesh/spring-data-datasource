@@ -1,5 +1,6 @@
 package com.virgin.dao.core.convert;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.datastore.*;
 import com.virgin.dao.core.exception.DataStoreMappingException;
 import org.springframework.core.convert.converter.Converter;

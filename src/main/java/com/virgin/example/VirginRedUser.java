@@ -1,5 +1,6 @@
 package com.virgin.example;
 
+import com.virgin.dao.core.mapping.Embedded;
 import com.virgin.dao.core.mapping.Kind;
 import org.springframework.data.annotation.Id;
 
@@ -17,20 +18,19 @@ public class VirginRedUser {
     private Date dob;
     private String lastName;
     private String firstName;
-    //    private ContactInfo contactInfo;
+    @Embedded
+    private ContactInfo contactInfo;
     private String socialProviderId;
     private String gender;
 
-    //    private List<String> roles;
 //    private List<String> permissions;
     private List<String> roles = new ArrayList<String>();
 
     private String permissions;
     private Long state;
     private String imageUrl;
-    //    private List<Long> partnerList = new ArrayList<>();
 
-    private List partnerList = new ArrayList<>();
+    private List<Long> partnerList = new ArrayList<>();
     private boolean isImagePointCredit;
     private boolean isProfilePointCredit;
     private boolean isMembershipPointCredit;
@@ -107,13 +107,13 @@ public class VirginRedUser {
         this.firstName = firstName;
     }
 
-   /* public ContactInfo getContactInfo() {
+    public ContactInfo getContactInfo() {
         return contactInfo;
     }
 
     public void setContactInfo(ContactInfo contactInfo) {
         this.contactInfo = contactInfo;
-    }*/
+    }
 
     public String getSocialProviderId() {
         return socialProviderId;
@@ -139,11 +139,11 @@ public class VirginRedUser {
         this.imageUrl = imageUrl;
     }
 
-    public List getPartnerList() {
+    public List<Long> getPartnerList() {
         return partnerList;
     }
 
-    public void setPartnerList(List partnerList) {
+    public void setPartnerList(List<Long> partnerList) {
         this.partnerList = partnerList;
     }
 

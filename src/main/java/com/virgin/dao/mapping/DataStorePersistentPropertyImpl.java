@@ -1,9 +1,11 @@
 package com.virgin.dao.mapping;
 
 import com.google.cloud.datastore.*;
+import com.virgin.dao.core.convert.DataStoreCache;
 import com.virgin.dao.core.convert.DataStoreMapper;
 import com.virgin.dao.core.convert.DataStoreMapperFactory;
 import com.virgin.dao.core.mapping.Column;
+import com.virgin.dao.core.mapping.Embedded;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Id;
@@ -14,9 +16,8 @@ import org.springframework.util.StringUtils;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.lang.reflect.Type;
+import java.util.*;
 
 public class DataStorePersistentPropertyImpl extends AnnotationBasedPersistentProperty<DataStorePersistentProperty> implements
         DataStorePersistentProperty {
@@ -26,6 +27,7 @@ public class DataStorePersistentPropertyImpl extends AnnotationBasedPersistentPr
     private final FieldNamingStrategy fieldNamingStrategy;
     private static final Set<String> SUPPORTED_ID_PROPERTY_NAMES = new HashSet<String>();
     private final DataStoreMapperFactory dataStoreMapperFactory;
+    private DataStoreCache<Type, Object> defaultNullValueCache = null;
 
     static {
         SUPPORTED_ID_PROPERTY_NAMES.add("id");
@@ -34,7 +36,9 @@ public class DataStorePersistentPropertyImpl extends AnnotationBasedPersistentPr
 
     public DataStorePersistentPropertyImpl(Field field, PropertyDescriptor propertyDescriptor, PersistentEntity<?, DataStorePersistentProperty> owner, SimpleTypeHolder simpleTypeHolder, FieldNamingStrategy fieldNamingStrategy) {
         super(field, propertyDescriptor, owner, simpleTypeHolder);
-        dataStoreMapperFactory = DataStoreMapperFactory.getInstance();
+        this.defaultNullValueCache = new DataStoreCache<>();
+        populateDefaultNullValues();
+        this.dataStoreMapperFactory = DataStoreMapperFactory.getInstance();
         this.fieldNamingStrategy = fieldNamingStrategy == null ? PropertyNameFieldNamingStrategy.INSTANCE : fieldNamingStrategy;
     }
 
@@ -98,14 +102,18 @@ public class DataStorePersistentPropertyImpl extends AnnotationBasedPersistentPr
 
     @Override
     public Object getConvertibleValue(Value<?> input) {
-        if (input instanceof NullValue) {
-            return null;
+        if (input == null || input instanceof NullValue) {
+            return defaultNullValueCache.get(getType());
         }
-        if (input instanceof ListValue) {
-            DataStoreMapper dataStoreMapper = dataStoreMapperFactory.getMapper(this.getTypeInformation());
+        if (input instanceof ListValue || isEmbeddedField()) {
+            DataStoreMapper dataStoreMapper = dataStoreMapperFactory.getMapper(this.getField().getGenericType());
             return dataStoreMapper.convert(input);
         }
         return input;
+    }
+
+    private boolean isEmbeddedField() {
+        return isAnnotationPresent(Embedded.class);
     }
 
     @Override
@@ -123,5 +131,13 @@ public class DataStorePersistentPropertyImpl extends AnnotationBasedPersistentPr
             return annotation.value();
         }
         return null;
+    }
+
+    private void populateDefaultNullValues() {
+        defaultNullValueCache.put(Boolean.class, false);
+        defaultNullValueCache.put(boolean.class, false);
+        defaultNullValueCache.put(List.class, new ArrayList<>());
+        defaultNullValueCache.put(Set.class, new HashSet<>());
+        defaultNullValueCache.put(Map.class, new HashMap<>());
     }
 }
