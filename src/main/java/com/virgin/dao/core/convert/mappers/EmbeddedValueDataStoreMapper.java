@@ -30,21 +30,13 @@ public class EmbeddedValueDataStoreMapper implements DataStoreMapper {
 
     @Override
     public Object convert(Value<?> input) {
-        System.out.println(">>>>>>>>>>>>>>>>>Inside embedded converter>>>>>>>>>>>>>>>>>>>");
         Object output = null;
         ObjectMapper mapper = new ObjectMapper();
         try {
             output = mapper.readValue((String) input.get(), clazz);
-            System.out.println("........................Output...........................");
-            System.out.println(clazz);
-            System.out.println(output);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        /*for (Value<?> item : list) {
-            Object o = conversionService.convert(item, typeInformation.getActualType().getType());
-            output.add(o);
-        }*/
         return output;
     }
 }
