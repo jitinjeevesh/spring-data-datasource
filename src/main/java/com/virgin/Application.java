@@ -3,14 +3,15 @@ package com.virgin;
 import com.jmethods.catatumbo.EntityManager;
 import com.jmethods.catatumbo.EntityManagerFactory;
 import com.virgin.dao.repository.config.EnableDataStoreRepositories;
-import com.virgin.example.SettingsRepository;
-import com.virgin.example.VirginRedUser;
-import com.virgin.example.VirginUserRepository;
+import com.virgin.example.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+
+import java.util.ArrayList;
+import java.util.Date;
 
 @SpringBootApplication
 @EnableDataStoreRepositories
@@ -21,6 +22,8 @@ public class Application {
     private SettingsRepository settingsRepository;
     @Autowired
     private VirginUserRepository virginUserRepository;
+    @Autowired
+    private TestKindRepository testKindRepository;
 
     public static void main(String[] args) throws InterruptedException {
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
@@ -31,8 +34,7 @@ public class Application {
 
     public void init() {
         //TODO:User
-//        VirginRedUser virginRedUser = virginUserRepository.findOne(4503633047584768l);
-        VirginRedUser virginRedUser = virginUserRepository.findOne(4503605994323968l);
+        /*VirginRedUser virginRedUser = virginUserRepository.findOne(4503633047584768l);
         System.out.println(virginRedUser.getPartnerList());
         if (!virginRedUser.getPartnerList().isEmpty())
             for (Object l : virginRedUser.getPartnerList()) {
@@ -45,7 +47,36 @@ public class Application {
             System.out.println(s.getClass());
         }
         System.out.println(virginRedUser.getContactInfo());
-        System.out.println(virginRedUser);
+        System.out.println(virginRedUser);*/
+
+        //TODO:Test saving new Kind
+        ContactInfo contactInfo = new ContactInfo();
+        contactInfo.setCity("Lucknow");
+        contactInfo.setCountry("India");
+        TestKind testKind = new TestKind();
+        testKind.setName("Jeevesh");
+        testKind.setContactInfo(contactInfo);
+        testKind.setRoles(new ArrayList<String>() {{
+            add("USER");
+            add("ADMIN");
+        }});
+        testKind.setBooleanPremitive(true);
+        testKind.setIsActive(true);
+        testKind.setCurrentDate(new Date());
+        testKind.setKindType(KindType.TEST);
+        testKindRepository.save(testKind);
+        System.out.println("Test kind save successfully");
+
+        //TODO:Fetch TestKind
+     /*   TestKind testKind = testKindRepository.findOne(5660805672468480l);
+        System.out.println(testKind.getContactInfo());
+        if (!testKind.getRoles().isEmpty())
+            for (Object l : testKind.getRoles()) {
+                System.out.println(l);
+            }
+        System.out.println(testKind);*/
+
+
         //TODO:Save object
         /*Settings settings = new Settings();
         settings.setValue(1);

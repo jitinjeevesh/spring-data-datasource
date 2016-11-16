@@ -1,6 +1,7 @@
 package com.virgin.example;
 
 import com.virgin.dao.core.mapping.Embeddable;
+import org.springframework.data.annotation.Transient;
 
 @Embeddable
 public class ContactInfo {
@@ -9,7 +10,9 @@ public class ContactInfo {
     private String country = "United Kingdom";
     private String phoneNo;
     /*code added-start */
+    @Transient
     private String addressLine1;
+    @Transient
     private String addressLine2;
     /*code added-end */
 

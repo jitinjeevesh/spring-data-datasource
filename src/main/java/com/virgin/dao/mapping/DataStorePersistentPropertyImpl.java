@@ -105,11 +105,17 @@ public class DataStorePersistentPropertyImpl extends AnnotationBasedPersistentPr
         if (input == null || input instanceof NullValue) {
             return defaultNullValueCache.get(getType());
         }
-        if (input instanceof ListValue || isEmbeddedField()) {
-            DataStoreMapper dataStoreMapper = dataStoreMapperFactory.getMapper(this.getField().getGenericType());
-            return dataStoreMapper.convert(input);
+        DataStoreMapper dataStoreMapper = dataStoreMapperFactory.getMapper(this.getField().getGenericType());
+        return dataStoreMapper.convert(input);
+    }
+
+    @Override
+    public Value<?> getConvertibleValue(Object input) {
+        if (input == null) {
+            return NullValue.newBuilder().build();
         }
-        return input;
+        DataStoreMapper dataStoreMapper = dataStoreMapperFactory.getMapper(this.getField().getGenericType());
+        return dataStoreMapper.convert(input);
     }
 
     private boolean isEmbeddedField() {

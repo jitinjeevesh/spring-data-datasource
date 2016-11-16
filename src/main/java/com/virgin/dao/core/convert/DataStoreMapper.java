@@ -5,7 +5,7 @@ import com.google.cloud.datastore.ValueBuilder;
 
 public interface DataStoreMapper {
 
-    ValueBuilder<?, ?, ?> convert(Object input);
+    Value<?> convert(Object input);
 
     Object convert(Value<?> input);
 }

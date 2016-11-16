@@ -1,9 +1,7 @@
 package com.virgin.dao.core.convert;
 
 import com.google.cloud.datastore.*;
-import com.virgin.dao.core.convert.mappers.EmbeddedValueDataStoreMapper;
-import com.virgin.dao.core.convert.mappers.ListValueDataStoreMapper;
-import com.virgin.dao.core.convert.mappers.SetValueDataStoreMapper;
+import com.virgin.dao.core.convert.mappers.*;
 import com.virgin.dao.core.mapping.Embeddable;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.convert.support.GenericConversionService;
@@ -101,14 +99,15 @@ public class DataStoreMapperFactory {
     private DataStoreMapper createMapper(Class<?> clazz) {
         DataStoreMapper mapper;
         if (List.class.isAssignableFrom(clazz)) {
-            mapper = new ListValueDataStoreMapper(conversionService, clazz);
+            mapper = new ListValueDataStoreMapper(clazz);
         } else if (Set.class.isAssignableFrom(clazz)) {
-            mapper = new SetValueDataStoreMapper(conversionService, clazz);
+            mapper = new SetValueDataStoreMapper(clazz);
         } else if (clazz.isAnnotationPresent(Embeddable.class)) {
             mapper = new EmbeddedValueDataStoreMapper(conversionService, clazz);
+        } else if (Enum.class.isAssignableFrom(clazz)) {
+            mapper = new EnumValueDataStoreMapper(conversionService, clazz);
         } else {
-            throw new RuntimeException("No Mapper found");
-            //NO custom mapper found
+            mapper = new DefaultDataStoreMapper(conversionService, clazz, getMapperClass(clazz));
         }
         return mapper;
     }
@@ -121,13 +120,13 @@ public class DataStoreMapperFactory {
         Class<?> rawClass = (Class<?>) rawType;
         DataStoreMapper mapper;
         if (List.class.isAssignableFrom(rawClass)) {
-            mapper = new ListValueDataStoreMapper(conversionService, type);
+            mapper = new ListValueDataStoreMapper(type);
         } else if (Set.class.isAssignableFrom(rawClass)) {
-            mapper = new SetValueDataStoreMapper(conversionService, type);
+            mapper = new SetValueDataStoreMapper(type);
         } else if (rawClass.isAnnotationPresent(Embeddable.class)) {
             mapper = new EmbeddedValueDataStoreMapper(conversionService, rawClass);
         } else {
-            throw new RuntimeException(String.format("Unsupported type: %s", type));
+            mapper = new DefaultDataStoreMapper(conversionService, rawClass, getMapperClass(rawClass));
         }
         return mapper;
     }
