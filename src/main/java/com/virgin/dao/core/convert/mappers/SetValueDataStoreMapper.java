@@ -5,6 +5,7 @@ import com.google.cloud.datastore.Value;
 import com.google.cloud.datastore.ValueBuilder;
 import com.jmethods.catatumbo.impl.IntrospectionUtils;
 import com.virgin.dao.core.convert.DataStoreMapper;
+import com.virgin.dao.core.convert.DataStoreMapperFactory;
 import com.virgin.dao.core.convert.DataStoreUtil;
 import org.springframework.core.convert.support.GenericConversionService;
 
@@ -14,22 +15,27 @@ import java.util.*;
 
 public class SetValueDataStoreMapper implements DataStoreMapper {
 
-    private GenericConversionService conversionService;
     private Type type;
     private Class<?> setClass;
     private Class<?> itemClass;
+    private DataStoreMapper dataStoreMapper;
 
-    public SetValueDataStoreMapper(GenericConversionService genericConversionService, Type type) {
+    public SetValueDataStoreMapper(Type type) {
         this.type = type;
-        this.conversionService = genericConversionService;
         Class<?>[] classArray = DataStoreUtil.resolveCollectionType(type);
         this.setClass = classArray[0];
         this.itemClass = classArray[1];
+        this.dataStoreMapper = DataStoreMapperFactory.getInstance().getMapper(itemClass);
     }
 
     @Override
-    public ValueBuilder<?, ?, ?> convert(Object input) {
-        return null;
+    public Value<?> convert(Object input) {
+        Set<?> set = (Set<?>) input;
+        ListValue.Builder listValurBuilder = ListValue.newBuilder();
+        for (Object item : set) {
+            listValurBuilder.addValue(dataStoreMapper.convert(item));
+        }
+        return listValurBuilder.build();
     }
 
     @SuppressWarnings("unchecked")
@@ -47,13 +53,8 @@ public class SetValueDataStoreMapper implements DataStoreMapper {
             output = (Set<Object>) DataStoreUtil.instantiateObject(setClass);
         }
         for (Value<?> item : list) {
-            if (item instanceof ListValue) {
-                Object o = convert(item);
-                output.add(o);
-            } else {
-                Object o = conversionService.convert(item, itemClass);
-                output.add(o);
-            }
+            Object o = dataStoreMapper.convert(item);
+            output.add(o);
         }
         return output;
     }

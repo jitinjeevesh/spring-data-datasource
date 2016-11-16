@@ -283,16 +283,6 @@ public abstract class DataStoreConverters {
         }
     }
     //TODO: Implement later
-/*
-    public static enum StringValueToEnumConverter implements Converter<StringValue, Enum> {
-        INSTANCE;
-
-        @Override
-        public Enum convert(StringValue source) {
-            String value = source.get();
-            return Enum.valueOf(enumClass, value);
-        }
-    }*/
 
     public static enum DoubleValueToFloatConverter implements Converter<DoubleValue, Float> {
         INSTANCE;

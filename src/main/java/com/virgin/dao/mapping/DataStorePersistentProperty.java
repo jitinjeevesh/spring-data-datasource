@@ -14,5 +14,7 @@ public interface DataStorePersistentProperty extends PersistentProperty<DataStor
 
     Object getConvertibleValue(Value<?> input);
 
+    Value<?> getConvertibleValue(Object input);
+
     Class<? extends Value<?>> getConvertibleType();
 }

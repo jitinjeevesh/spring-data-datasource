@@ -41,8 +41,8 @@ public class DataStoreTemplate implements DataStoreOperation {
     protected <E> void doInsert(String kindName, E objectToSave) {
         KeyFactory keyFactory = datastore.newKeyFactory().setKind(kindName);
         Key key = datastore.allocateId(keyFactory.newKey());
-        /*FullEntity<?> nativeEntity = (FullEntity<?>) */dataStoreConverter.convertToDataStoreType(objectToSave, key);
-//        datastore.add(nativeEntity);
+        FullEntity<?> nativeEntity = (FullEntity<?>) dataStoreConverter.convertToDataStoreType(objectToSave, key);
+        datastore.add(nativeEntity);
     }
 
     //TODO:Throw custom errors.

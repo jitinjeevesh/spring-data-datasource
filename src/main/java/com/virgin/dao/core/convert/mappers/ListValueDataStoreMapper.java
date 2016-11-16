@@ -1,9 +1,10 @@
 package com.virgin.dao.core.convert.mappers;
 
 import com.google.cloud.datastore.ListValue;
+import com.google.cloud.datastore.NullValue;
 import com.google.cloud.datastore.Value;
-import com.google.cloud.datastore.ValueBuilder;
 import com.virgin.dao.core.convert.DataStoreMapper;
+import com.virgin.dao.core.convert.DataStoreMapperFactory;
 import com.virgin.dao.core.convert.DataStoreUtil;
 import org.springframework.core.convert.support.GenericConversionService;
 
@@ -14,22 +15,27 @@ import java.util.List;
 
 public class ListValueDataStoreMapper implements DataStoreMapper {
 
-    private GenericConversionService conversionService;
     private Type type;
     private Class<?> listClass;
     private Class<?> itemClass;
+    private DataStoreMapper dataStoreMapper;
 
-    public ListValueDataStoreMapper(GenericConversionService genericConversionService, Type type) {
+    public ListValueDataStoreMapper(Type type) {
         this.type = type;
-        this.conversionService = genericConversionService;
         Class<?>[] classArray = DataStoreUtil.resolveCollectionType(type);
         this.listClass = classArray[0];
         this.itemClass = classArray[1];
+        this.dataStoreMapper = DataStoreMapperFactory.getInstance().getMapper(itemClass);
     }
 
     @Override
-    public ValueBuilder<?, ?, ?> convert(Object input) {
-        return null;
+    public Value<?> convert(Object input) {
+        List<?> list = (List<?>) input;
+        ListValue.Builder listValurBuilder = ListValue.newBuilder();
+        for (Object item : list) {
+            listValurBuilder.addValue(dataStoreMapper.convert(item));
+        }
+        return listValurBuilder.build();
     }
 
     @SuppressWarnings("unchecked")
@@ -43,13 +49,8 @@ public class ListValueDataStoreMapper implements DataStoreMapper {
             output = (List<Object>) DataStoreUtil.instantiateObject(listClass);
         }
         for (Value<?> item : list) {
-            if (item instanceof ListValue) {
-                Object o = convert(item);
-                output.add(o);
-            } else {
-                Object o = conversionService.convert(item, itemClass);
-                output.add(o);
-            }
+            Object o = dataStoreMapper.convert(item);
+            output.add(o);
         }
         return output;
     }
