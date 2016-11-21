@@ -51,7 +51,7 @@ public class DataStoreTemplate implements DataStoreOperation {
     public <E> void save(Object objectToSave, Class<E> entityClass) {
         KeyFactory keyFactory = datastore.newKeyFactory().setKind(determineCollectionName(entityClass));
         Entity nativeEntity = (Entity) dataStoreConverter.convertToDataStoreType(objectToSave, keyFactory);
-//        datastore.put(nativeEntity);
+        datastore.put(nativeEntity);
     }
 
     private DataStorePersistentEntity<?> getPersistentEntity(Class<?> type) {
