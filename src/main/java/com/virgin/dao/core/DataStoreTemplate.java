@@ -1,7 +1,9 @@
 package com.virgin.dao.core;
 
 import com.google.cloud.datastore.*;
+import com.google.cloud.datastore.Query;
 import com.virgin.dao.core.convert.DataStoreConverter;
+import com.virgin.dao.core.query.*;
 import com.virgin.dao.mapping.DataStorePersistentEntity;
 import com.virgin.dao.mapping.DataStorePersistentProperty;
 import org.slf4j.Logger;
@@ -151,6 +153,24 @@ public class DataStoreTemplate implements DataStoreOperation {
             count = newEntity.getLong(DataStoreConstants.TOTAL_COUNT_PROPERTY_NAME);
         }
         return count;
+    }
+
+    @Override
+    public long count(DataStoreQuery dataStoreQuery, Class<?> type, String kindName) {
+        return 0;
+    }
+
+    @Override
+    public <E> E findOne(DataStoreQuery dataStoreQuery, Class<E> type, String kindName) {
+        //TODO:Only one object will be fetched for now.
+        Query<Entity> query = Query.newEntityQueryBuilder().setKind(kindName).setFilter(dataStoreQuery.getPropertyFilter()).build();
+        QueryResults<Entity> results = datastore.run(query);
+        E convertedEntity = null;
+        if (results.hasNext()) {
+            Entity newEntity = results.next();
+            convertedEntity = dataStoreConverter.read(type, newEntity);
+        }
+        return convertedEntity;
     }
 
     String determineCollectionName(Class<?> entityClass) {

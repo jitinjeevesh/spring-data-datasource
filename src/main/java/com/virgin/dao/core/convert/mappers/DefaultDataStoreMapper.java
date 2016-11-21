@@ -1,5 +1,6 @@
 package com.virgin.dao.core.convert.mappers;
 
+import com.google.cloud.datastore.NullValue;
 import com.google.cloud.datastore.Value;
 import com.virgin.dao.core.convert.DataStoreMapper;
 import org.springframework.core.convert.support.GenericConversionService;
@@ -18,6 +19,9 @@ public class DefaultDataStoreMapper implements DataStoreMapper {
 
     @Override
     public Value<?> convert(Object input) {
+        if (input == null) {
+            return NullValue.newBuilder().build();
+        }
         return conversionService.convert(input, dataStoreClass);
     }
 

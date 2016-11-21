@@ -40,8 +40,16 @@ public class MappingDataStoreConverter extends AbstractDataStoreConverter {
         return null;
     }
 
+    //TODO:Implement this method for all the data types.
     @Override
     public Object convertToDataStoreType(Object obj, TypeInformation<?> typeInformation) {
+        if (obj == null) {
+            return NullValue.newBuilder().build();
+        }
+        Class<?> target = dataStoreMapperFactory.getMapperClass(obj.getClass());
+        if (target != null) {
+            return conversionService.convert(obj, target);
+        }
         return null;
     }
 
