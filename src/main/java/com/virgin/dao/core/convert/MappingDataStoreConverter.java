@@ -14,6 +14,7 @@ import org.springframework.data.util.TypeInformation;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 public class MappingDataStoreConverter extends AbstractDataStoreConverter {
 
@@ -77,6 +78,34 @@ public class MappingDataStoreConverter extends AbstractDataStoreConverter {
     }
 
     @Override
+    public BaseEntity<?> convertToDataStoreType(final Object obj, KeyFactory keyFactory) {
+        Object idValue = getIdValue(obj.getClass(), obj);
+        Key key = null;
+        if (idValue instanceof Long) {
+            key = keyFactory.newKey((Long) idValue);
+        } else {
+            key = keyFactory.newKey((String) idValue);
+        }
+        final BaseEntity.Builder<?, ?> entityBuilder = Entity.newBuilder(key);
+        Class<?> entityType = obj.getClass();
+        TypeInformation<?> type = ClassTypeInformation.from(entityType);
+        DataStorePersistentEntity<?> dataStorePersistentEntity = mappingContext.getPersistentEntity(entityType);
+        final PersistentPropertyAccessor accessor = dataStorePersistentEntity.getPropertyAccessor(obj);
+        final DataStorePersistentProperty idProperty = dataStorePersistentEntity.getIdProperty();
+        dataStorePersistentEntity.doWithProperties(new PropertyHandler<DataStorePersistentProperty>() {
+            public void doWithPersistentProperty(DataStorePersistentProperty prop) {
+                if (prop.equals(idProperty) || !prop.isWritable()) {
+                    return;
+                }
+                Object propertyObj = accessor.getProperty(prop);
+                Value<?> datastoreValue = prop.getConvertibleValue(propertyObj);
+                entityBuilder.set(prop.getFieldName(), datastoreValue);
+            }
+        });
+        return entityBuilder.build();
+    }
+
+    @Override
     public ConversionService getConversionService() {
         return this.conversionService;
     }
@@ -127,6 +156,14 @@ public class MappingDataStoreConverter extends AbstractDataStoreConverter {
             }
         });
         return result;
+    }
+
+    @Override
+    public Object getIdValue(Class<?> type, Object obj) {
+        DataStorePersistentEntity<?> dataStorePersistentEntity = mappingContext.getPersistentEntity(type);
+        PersistentPropertyAccessor accessor = dataStorePersistentEntity.getPropertyAccessor(obj);
+        DataStorePersistentProperty idProperty = dataStorePersistentEntity.getIdProperty();
+        return accessor.getProperty(idProperty);
     }
 
     @Override

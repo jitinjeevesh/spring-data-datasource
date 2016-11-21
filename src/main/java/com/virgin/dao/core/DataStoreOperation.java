@@ -10,6 +10,8 @@ public interface DataStoreOperation {
 
     <E> void insert(Object objectToSave, Class<E> entityClass);
 
+    <E> void save(Object objectToSave, Class<E> entityClass);
+
     <E> E load(Class<E> entityClass, String id);
 
     <E> E load(Class<E> entityClass, long id);

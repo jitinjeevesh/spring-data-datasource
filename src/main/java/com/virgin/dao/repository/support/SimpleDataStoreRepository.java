@@ -57,7 +57,11 @@ public class SimpleDataStoreRepository<T, ID extends Serializable> implements Da
     @Override
     public <S extends T> S save(S entity) {
         Assert.notNull(entity, "Entity must not be null!");
-        dataStoreOperation.insert(entity, getKindClass());
+        if (dataStoreEntityInformation.isNew(entity)) {
+            dataStoreOperation.insert(entity, getKindClass());
+        } else {
+            dataStoreOperation.save(entity,getKindClass());
+        }
         return null;
     }
 

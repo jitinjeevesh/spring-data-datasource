@@ -47,6 +47,17 @@ public class DataStoreTemplate implements DataStoreOperation {
         datastore.add(nativeEntity);
     }
 
+    @Override
+    public <E> void save(Object objectToSave, Class<E> entityClass) {
+        KeyFactory keyFactory = datastore.newKeyFactory().setKind(determineCollectionName(entityClass));
+        Entity nativeEntity = (Entity) dataStoreConverter.convertToDataStoreType(objectToSave, keyFactory);
+//        datastore.put(nativeEntity);
+    }
+
+    private DataStorePersistentEntity<?> getPersistentEntity(Class<?> type) {
+        return type == null ? null : mappingContext.getPersistentEntity(type);
+    }
+
     //TODO:Throw custom errors.
     @Override
     public <E> E load(Class<E> entityClass, String id) {
