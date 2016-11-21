@@ -67,6 +67,10 @@ public class DataStoreMapperFactory {
         return valueMapperCache.get(type);
     }
 
+    public Value<?> getMapperValue(Object value) {
+        return createMapper(value.getClass()).convert(value);
+    }
+
     public DataStoreMapper getMapper(Type type) {
         DataStoreMapper mapper = cache.get(type);
         if (mapper == null) {

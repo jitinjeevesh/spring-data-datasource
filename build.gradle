@@ -52,10 +52,10 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-actuator")
     compile("org.springframework.boot:spring-boot-starter-integration")
     compile 'com.google.cloud:google-cloud:0.5.0'
-    compile "org.springframework.data:spring-data-commons"
+    compile "org.springframework.data:spring-data-commons:1.12.5.RELEASE"
 //    compile 'org.springframework.data:spring-data-jpa:1.10.4.RELEASE'
     compile group: 'org.springframework', name: 'spring-aspects', version: '4.2.1.RELEASE'
-    compile group: 'javax.persistence', name: 'persistence-api', version: '1.0.2'
+//    compile group: 'javax.persistence', name: 'persistence-api', version: '1.0.2'
     compile group: 'javax.enterprise', name: 'cdi-api', version: '1.2'
     compile group: 'javax.annotation', name: 'jsr250-api', version: '1.0'
     compile group: 'org.aspectj', name: 'aspectjrt', version: '1.8.9'

@@ -1,5 +1,8 @@
 package com.virgin;
 
+import com.google.cloud.datastore.EntityQuery;
+import com.google.cloud.datastore.Query;
+import com.google.cloud.datastore.StructuredQuery;
 import com.jmethods.catatumbo.EntityManager;
 import com.jmethods.catatumbo.EntityManagerFactory;
 import com.virgin.dao.repository.config.EnableDataStoreRepositories;
@@ -33,6 +36,11 @@ public class Application {
 
 
     public void init() {
+        //TODO:Dynamic Query
+        System.out.println(settingsRepository.findByFeature("STRIPE"));
+//        System.out.println(testKindRepository.findByNameAndBooleanPremitive("Jeevesh", true));
+//        System.out.println(testKindRepository.findAllByName("Jeevesh"));
+//        System.out.println(testKindRepository.findByName("Jeevesh"));
         //TODO:User
         /*VirginRedUser virginRedUser = virginUserRepository.findOne(4503633047584768l);
         System.out.println(virginRedUser.getPartnerList());
@@ -50,7 +58,7 @@ public class Application {
         System.out.println(virginRedUser);*/
 
         //TODO:Test saving new Kind
-        ContactInfo contactInfo = new ContactInfo();
+        /*ContactInfo contactInfo = new ContactInfo();
         contactInfo.setCity("Lucknow");
         contactInfo.setCountry("India");
         TestKind testKind = new TestKind();
@@ -65,10 +73,10 @@ public class Application {
         testKind.setCurrentDate(new Date());
         testKind.setKindType(KindType.TEST);
         testKindRepository.save(testKind);
-        System.out.println("Test kind save successfully");
+        System.out.println("Test kind save successfully");*/
 
         //TODO:Fetch TestKind
-     /*   TestKind testKind = testKindRepository.findOne(5660805672468480l);
+       /* TestKind testKind = testKindRepository.findOne(5728694408577024l);
         System.out.println(testKind.getContactInfo());
         if (!testKind.getRoles().isEmpty())
             for (Object l : testKind.getRoles()) {
@@ -145,6 +153,7 @@ public class Application {
 
         System.out.println(settings);
         System.out.println(settings.size());*/
+        EntityQuery query = Query.newEntityQueryBuilder().setKind("Settings").setFilter(StructuredQuery.PropertyFilter.eq("environment", "PROD")).build();
       /*  Datastore datastore = DatastoreOptions.defaultInstance().service();
         KeyFactory keyFactory = datastore.newKeyFactory().kind("Settings");
 

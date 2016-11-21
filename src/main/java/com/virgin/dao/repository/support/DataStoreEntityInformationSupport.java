@@ -18,7 +18,7 @@ public abstract class DataStoreEntityInformationSupport<T, ID extends Serializab
     public DataStoreEntityInformationSupport(DataStorePersistentEntity<T> dataStorePersistentEntity) {
         super(dataStorePersistentEntity);
         this.dataStorePersistentEntity = dataStorePersistentEntity;
-        this.metadata = new DefaultDataStoreEntityMetaData<T>(dataStorePersistentEntity.getType());
+        this.metadata = new DefaultDataStoreEntityMetaData<T>(dataStorePersistentEntity.getType(),dataStorePersistentEntity);
     }
 
     public static <T> DataStoreEntityInformation<T, ?> getEntityInformation(DataStorePersistentEntity<T> dataStorePersistentEntity) {
