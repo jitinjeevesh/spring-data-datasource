@@ -1,13 +1,15 @@
 package com.virgin.example;
 
 import com.virgin.dao.repository.DataStoreRepository;
+import com.virgin.dao.repository.Query;
 
 import java.util.Date;
 import java.util.List;
 
 public interface TestKindRepository extends DataStoreRepository<TestKind, Long> {
 
-    TestKind findByName(String name);
+    @Query(value = "select * from TestKind where name = @name and isActive = @isActive")
+    TestKind findByName(String name, boolean isActive);
 
     List<TestKind> findAllByName(String name);
 

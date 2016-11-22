@@ -40,7 +40,7 @@ public class Application {
 //        System.out.println(settingsRepository.findByFeature("STRIPE"));
 //        System.out.println(testKindRepository.findByNameAndBooleanPremitive("Jeevesh", true));
 //        System.out.println(testKindRepository.findAllByName("Jeevesh"));
-//        System.out.println(testKindRepository.findByName("Jeevesh"));
+        System.out.println(testKindRepository.findByName("Jeevesh",true));
         //TODO:User
         /*VirginRedUser virginRedUser = virginUserRepository.findOne(4503633047584768l);
         System.out.println(virginRedUser.getPartnerList());
@@ -58,23 +58,23 @@ public class Application {
         System.out.println(virginRedUser);*/
 
         //TODO:Test updating Kind
-        ContactInfo contactInfo = new ContactInfo();
+     /*   ContactInfo contactInfo = new ContactInfo();
         contactInfo.setCity("Lucknow");
         contactInfo.setCountry("India");
         TestKind testKind = new TestKind();
         testKind.setId(5728694408577024l);
         testKind.setName("Jeevesh");
-//        testKind.setContactInfo(contactInfo);
-//        testKind.setRoles(new ArrayList<String>() {{
-//            add("USER");
-//            add("ADMIN");
-//        }});
-//        testKind.setBooleanPremitive(true);
-//        testKind.setIsActive(true);
-//        testKind.setCurrentDate(new Date());
-//        testKind.setKindType(KindType.TEST);
+        testKind.setContactInfo(contactInfo);
+        testKind.setRoles(new ArrayList<String>() {{
+            add("USER");
+            add("ADMIN");
+        }});
+        testKind.setBooleanPremitive(true);
+        testKind.setIsActive(true);
+        testKind.setCurrentDate(new Date());
+        testKind.setKindType(KindType.TEST);
         testKindRepository.save(testKind);
-        System.out.println("Test kind save successfully");
+        System.out.println("Test kind save successfully");*/
 
         //TODO:Test saving new Kind
         /*ContactInfo contactInfo = new ContactInfo();

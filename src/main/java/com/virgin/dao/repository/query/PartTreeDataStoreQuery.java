@@ -1,7 +1,7 @@
 package com.virgin.dao.repository.query;
 
 import com.virgin.dao.core.DataStoreOperation;
-import com.virgin.dao.core.query.DataStoreQuery;
+import com.virgin.dao.core.query.DynamicQuery;
 import com.virgin.dao.mapping.DataStorePersistentProperty;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.repository.query.ResultProcessor;
@@ -22,20 +22,20 @@ public class PartTreeDataStoreQuery extends AbstractDataStoreQuery {
     }
 
     @Override
-    protected DataStoreQuery createQuery(DataStoreConvertingParameterAccessor accessor) {
+    protected DynamicQuery createQuery(DataStoreConvertingParameterAccessor accessor) {
         DataStoreQueryCreator dataStoreQueryCreator = new DataStoreQueryCreator(tree, accessor, context);
-        DataStoreQuery dataStoreQuery = dataStoreQueryCreator.createQuery();
+        DynamicQuery dynamicQuery = dataStoreQueryCreator.createQuery();
         System.out.println("........................Inside create query....................................");
-        System.out.println(dataStoreQuery);
+        System.out.println(dynamicQuery);
         System.out.println(tree.isLimiting());
         System.out.println(tree.getMaxResults());
         if (tree.isLimiting()) {
-            dataStoreQuery.limit(tree.getMaxResults());
+            dynamicQuery.limit(tree.getMaxResults());
         }
         ReturnedType returnedType = processor.withDynamicProjection(accessor).getReturnedType();
         System.out.println(returnedType.isProjecting());
         System.out.println(returnedType.getReturnedType());
-        return dataStoreQuery;
+        return dynamicQuery;
     }
 
     @Override

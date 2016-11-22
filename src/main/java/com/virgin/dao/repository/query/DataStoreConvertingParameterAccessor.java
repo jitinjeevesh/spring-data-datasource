@@ -55,6 +55,11 @@ public class DataStoreConvertingParameterAccessor implements DataStoreParameterA
         return dataStoreConverter.convertToDataStoreType(value, typeInformation == null ? null : typeInformation.getActualType());
     }
 
+    @Override
+    public Object[] getValues() {
+        return dataStoreParameterAccessor.getValues();
+    }
+
     private class ConvertingIterator implements PotentiallyConvertingIterator {
 
         private final Iterator<Object> delegate;

@@ -2,6 +2,7 @@ package com.virgin.dao.repository.query;
 
 import com.virgin.dao.core.DataStoreOperation;
 import com.virgin.dao.core.query.DataStoreQuery;
+import com.virgin.dao.core.query.DynamicQuery;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.EntityInstantiators;
 import org.springframework.data.repository.query.ResultProcessor;
@@ -10,7 +11,7 @@ import org.springframework.util.ClassUtils;
 
 public interface DataStoreQueryExecution {
 
-    Object execute(DataStoreQuery dataStoreQuery, Class<?> type, String collection);
+    Object execute(DataStoreQuery dynamicQuery, Class<?> type, String collection);
 
     static final class SingleEntityExecution implements DataStoreQueryExecution {
 
@@ -23,8 +24,8 @@ public interface DataStoreQueryExecution {
         }
 
         @Override
-        public Object execute(DataStoreQuery dataStoreQuery, Class<?> type, String kindName) {
-            return countProjection ? operations.count(dataStoreQuery, type, kindName) : operations.findOne(dataStoreQuery, type, kindName);
+        public Object execute(DataStoreQuery dynamicQuery, Class<?> type, String kindName) {
+            return countProjection ? operations.count(dynamicQuery, type, kindName) : operations.findOne(dynamicQuery, type, kindName);
         }
     }
 
@@ -39,8 +40,8 @@ public interface DataStoreQueryExecution {
         }
 
         @Override
-        public Object execute(DataStoreQuery dataStoreQuery, Class<?> type, String kindName) {
-            return converter.convert(delegate.execute(dataStoreQuery, type, kindName));
+        public Object execute(DataStoreQuery dynamicQuery, Class<?> type, String kindName) {
+            return converter.convert(delegate.execute(dynamicQuery, type, kindName));
         }
     }
 
@@ -62,13 +63,15 @@ public interface DataStoreQueryExecution {
             ReturnedType returnedType = processor.getReturnedType();
 
             if (ClassUtils.isPrimitiveOrWrapper(returnedType.getReturnedType())) {
+                System.out.println(".....................................................Inside class utils.................................");
                 return source;
             }
 
-            Converter<Object, Object> converter = new DtoInstantiatingConverter(returnedType.getReturnedType(),
+          /*  Converter<Object, Object> converter = new DtoInstantiatingConverter(returnedType.getReturnedType(),
                     operations.getConverter().getMappingContext(), instantiators);
 
-            return processor.processResult(source, converter);
+            return processor.processResult(source, converter);*/
+            return source;
         }
     }
 }

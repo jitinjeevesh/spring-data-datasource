@@ -2,11 +2,15 @@ package com.virgin.dao.repository.query;
 
 import com.virgin.dao.mapping.DataStorePersistentEntity;
 import com.virgin.dao.mapping.DataStorePersistentProperty;
+import com.virgin.dao.repository.Query;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 
@@ -47,5 +51,23 @@ public class DataStoreQueryMethod extends QueryMethod {
             }
         }
         return this.entityMetaData;
+    }
+
+    public boolean hasAnnotatedQuery() {
+        return getAnnotatedQuery() != null;
+    }
+
+    public String getAnnotatedQuery() {
+        String query = (String) AnnotationUtils.getValue(getQueryAnnotation());
+        return StringUtils.hasText(query) ? query : null;
+    }
+
+    public Query getQueryAnnotation() {
+        return AnnotatedElementUtils.findMergedAnnotation(method, Query.class);
+    }
+
+    String getFieldSpecification() {
+        String value = (String) AnnotationUtils.getValue(getQueryAnnotation(), "fields");
+        return StringUtils.hasText(value) ? value : null;
     }
 }

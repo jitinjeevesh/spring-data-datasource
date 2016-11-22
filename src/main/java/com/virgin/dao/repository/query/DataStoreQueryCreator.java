@@ -2,7 +2,7 @@ package com.virgin.dao.repository.query;
 
 import com.virgin.dao.repository.query.DataStoreConvertingParameterAccessor.PotentiallyConvertingIterator;
 import com.virgin.dao.core.query.Criteria;
-import com.virgin.dao.core.query.DataStoreQuery;
+import com.virgin.dao.core.query.DynamicQuery;
 import com.virgin.dao.mapping.DataStorePersistentProperty;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mapping.context.MappingContext;
@@ -14,7 +14,7 @@ import org.springframework.util.Assert;
 
 import java.util.Iterator;
 
-public class DataStoreQueryCreator extends AbstractQueryCreator<DataStoreQuery, Criteria> {
+public class DataStoreQueryCreator extends AbstractQueryCreator<DynamicQuery, Criteria> {
 
     private final MappingContext<?, DataStorePersistentProperty> context;
     private final DataStoreParameterAccessor accessor;
@@ -59,12 +59,12 @@ public class DataStoreQueryCreator extends AbstractQueryCreator<DataStoreQuery, 
     }
 
     @Override
-    protected DataStoreQuery complete(Criteria criteria, Sort sort) {
+    protected DynamicQuery complete(Criteria criteria, Sort sort) {
         System.out.println("Inside complete block.........");
         System.out.println(criteria);
         System.out.println(sort);
-        DataStoreQuery dataStoreQuery = (criteria == null ? new DataStoreQuery() : new DataStoreQuery(criteria)).with(sort);
-        return dataStoreQuery;
+        DynamicQuery dynamicQuery = (criteria == null ? new DynamicQuery() : new DynamicQuery(criteria)).with(sort);
+        return dynamicQuery;
     }
 
     private Criteria from(Part part, DataStorePersistentProperty property, Criteria criteria, Iterator<Object> parameters) {

@@ -1,8 +1,10 @@
 package com.virgin.dao.repository.query;
 
-import com.virgin.dao.repository.query.DataStoreQueryExecution.SingleEntityExecution;
 import com.virgin.dao.core.DataStoreOperation;
 import com.virgin.dao.core.query.DataStoreQuery;
+import com.virgin.dao.repository.query.DataStoreQueryExecution.SingleEntityExecution;
+import com.virgin.dao.repository.query.DataStoreQueryExecution.ResultProcessingConverter;
+import com.virgin.dao.repository.query.DataStoreQueryExecution.ResultProcessingExecution;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.EntityInstantiators;
 import org.springframework.data.repository.query.QueryMethod;
@@ -28,22 +30,19 @@ public abstract class AbstractDataStoreQuery implements RepositoryQuery {
     public Object execute(Object[] parameters) {
         DataStoreParameterAccessor dataStoreParameterAccessor = new DataStoreParametersParameterAccessor(method, parameters);
         DataStoreQuery dataStoreQuery = createQuery(new DataStoreConvertingParameterAccessor(operations.getConverter(), dataStoreParameterAccessor));
-
         ResultProcessor processor = method.getResultProcessor().withDynamicProjection(dataStoreParameterAccessor);
         String kindName = method.getEntityInformation().getKindName();
-        System.out.println(".................>Inside query execute...................");
-        System.out.println(kindName);
-
-        DataStoreQueryExecution dataStoreQueryExecution = getExecution(dataStoreQuery, dataStoreParameterAccessor,
-                new DataStoreQueryExecution.ResultProcessingConverter(processor, operations, instantiators));
+        ResultProcessingConverter resultProcessingConverter = new ResultProcessingConverter(processor, operations, instantiators);
+        DataStoreQueryExecution dataStoreQueryExecution = getExecution(dataStoreQuery, dataStoreParameterAccessor, resultProcessingConverter);
         return dataStoreQueryExecution.execute(dataStoreQuery, processor.getReturnedType().getDomainType(), kindName);
     }
 
     private DataStoreQueryExecution getExecution(DataStoreQuery dataStoreQuery, DataStoreParameterAccessor accessor, Converter<Object, Object> resultProcessing) {
-        return new DataStoreQueryExecution.ResultProcessingExecution(getExecutionToWrap(dataStoreQuery, accessor), resultProcessing);
+        return new ResultProcessingExecution(getExecutionToWrap(dataStoreQuery, accessor), resultProcessing);
     }
 
-    private DataStoreQueryExecution getExecutionToWrap(DataStoreQuery dataStoreQuery, DataStoreParameterAccessor accessor) {
+    //TODO:Implement all queries.
+    private DataStoreQueryExecution getExecutionToWrap(DataStoreQuery dynamicQuery, DataStoreParameterAccessor accessor) {
         System.out.println("..........................Check for collection query................................................");
         System.out.println(method.isCollectionQuery());
         if (method.isCollectionQuery()) {

@@ -167,14 +167,35 @@ public class DataStoreTemplate implements DataStoreOperation {
     }
 
     @Override
-    public long count(DataStoreQuery dataStoreQuery, Class<?> type, String kindName) {
+    public long count(DataStoreQuery dynamicQuery, Class<?> type, String kindName) {
         return 0;
     }
 
     @Override
     public <E> E findOne(DataStoreQuery dataStoreQuery, Class<E> type, String kindName) {
+        if (dataStoreQuery instanceof DynamicQuery) {
+            return doFindOne((DynamicQuery) dataStoreQuery, type, kindName);
+        } else if (dataStoreQuery instanceof StringQuery) {
+            return doFindOne((StringQuery) dataStoreQuery, type);
+        } else {
+            throw new InvalidDataAccessApiUsageException("No other query method defined");
+        }
+    }
+
+    private <E> E doFindOne(StringQuery dataStoreQuery, Class<E> type) {
+        Query<Entity> query = Query.newGqlQueryBuilder(Query.ResultType.ENTITY, dataStoreQuery.getQuery()).setAllowLiteral(true).build();
+        QueryResults<Entity> results = datastore.run(query);
+        E convertedEntity = null;
+        if (results.hasNext()) {
+            Entity newEntity = results.next();
+            convertedEntity = dataStoreConverter.read(type, newEntity);
+        }
+        return convertedEntity;
+    }
+
+    private <E> E doFindOne(DynamicQuery dynamicQuery, Class<E> type, String kindName) {
         //TODO:Only one object will be fetched for now.
-        Query<Entity> query = Query.newEntityQueryBuilder().setKind(kindName).setFilter(dataStoreQuery.getPropertyFilter()).build();
+        Query<Entity> query = Query.newEntityQueryBuilder().setKind(kindName).setFilter(dynamicQuery.getPropertyFilter()).build();
         QueryResults<Entity> results = datastore.run(query);
         E convertedEntity = null;
         if (results.hasNext()) {

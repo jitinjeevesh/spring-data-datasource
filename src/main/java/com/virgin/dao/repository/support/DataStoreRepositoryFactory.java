@@ -5,6 +5,7 @@ import com.virgin.dao.mapping.DataStorePersistentEntity;
 import com.virgin.dao.mapping.DataStorePersistentProperty;
 import com.virgin.dao.repository.query.DataStoreQueryMethod;
 import com.virgin.dao.repository.query.PartTreeDataStoreQuery;
+import com.virgin.dao.repository.query.StringBasedDataStoreQuery;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.projection.ProjectionFactory;
@@ -16,6 +17,7 @@ import org.springframework.data.repository.core.support.RepositoryFactorySupport
 import org.springframework.data.repository.query.EvaluationContextProvider;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.RepositoryQuery;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
@@ -25,6 +27,7 @@ import static org.springframework.data.querydsl.QueryDslUtils.QUERY_DSL_PRESENT;
 
 public class DataStoreRepositoryFactory extends RepositoryFactorySupport {
 
+    private static final SpelExpressionParser EXPRESSION_PARSER = new SpelExpressionParser();
     private final MappingContext<? extends DataStorePersistentEntity<?>, DataStorePersistentProperty> mappingContext;
     private final DataStoreOperation dataStoreOperation;
 
@@ -34,7 +37,7 @@ public class DataStoreRepositoryFactory extends RepositoryFactorySupport {
         this.mappingContext = dataStoreOperation.getConverter().getMappingContext();
     }
 
-    @SuppressWarnings("")
+    @SuppressWarnings("unchecked")
     @Override
     public <T, ID extends Serializable> DataStoreEntityInformation<T, ID> getEntityInformation(Class<T> domainClass) {
         DataStorePersistentEntity<?> dataStorePersistentEntity = mappingContext.getPersistentEntity(domainClass);
@@ -55,9 +58,6 @@ public class DataStoreRepositoryFactory extends RepositoryFactorySupport {
     @Override
     protected Class<?> getRepositoryBaseClass(RepositoryMetadata metadata) {
         boolean isQueryDslRepository = QUERY_DSL_PRESENT && QueryDslPredicateExecutor.class.isAssignableFrom(metadata.getRepositoryInterface());
-        System.out.println("............................is query dsl present..........................................");
-        System.out.println(QUERY_DSL_PRESENT);
-        System.out.printf(String.valueOf(isQueryDslRepository));
 //        return isQueryDslRepository ? SimpleDataStoreRepository.class : SimpleDataStoreRepository.class;
         return SimpleDataStoreRepository.class;
     }
@@ -84,7 +84,7 @@ public class DataStoreRepositoryFactory extends RepositoryFactorySupport {
 
         @Override
         public RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata, ProjectionFactory factory, NamedQueries namedQueries) {
-            DataStoreQueryMethod queryMethod = new DataStoreQueryMethod(method, metadata, factory,mappingContext);
+            DataStoreQueryMethod queryMethod = new DataStoreQueryMethod(method, metadata, factory, mappingContext);
             String namedQueryName = queryMethod.getNamedQueryName();
 
             System.out.println("....................Inside resolve query......................................");
@@ -92,7 +92,11 @@ public class DataStoreRepositoryFactory extends RepositoryFactorySupport {
             System.out.println(metadata);
             System.out.println(method.getName());
             System.out.println(namedQueries);
-            return new PartTreeDataStoreQuery(queryMethod, operations);
+            if (queryMethod.hasAnnotatedQuery()) {
+                return new StringBasedDataStoreQuery(queryMethod, operations, EXPRESSION_PARSER, evaluationContextProvider);
+            } else {
+                return new PartTreeDataStoreQuery(queryMethod, operations);
+            }
         }
     }
 }

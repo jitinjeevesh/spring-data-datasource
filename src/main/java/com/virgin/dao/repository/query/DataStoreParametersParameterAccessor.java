@@ -26,4 +26,9 @@ public class DataStoreParametersParameterAccessor extends ParametersParameterAcc
         this.dataStoreQueryMethod = dataStoreQueryMethod;
         this.values = Arrays.asList(values);
     }
+
+    @Override
+    public Object[] getValues() {
+        return values.toArray();
+    }
 }
