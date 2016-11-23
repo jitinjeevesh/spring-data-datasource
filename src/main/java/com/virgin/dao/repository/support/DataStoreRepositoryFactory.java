@@ -88,7 +88,7 @@ public class DataStoreRepositoryFactory extends RepositoryFactorySupport {
             String namedQueryName = queryMethod.getNamedQueryName();
 
             System.out.println("....................Inside resolve query......................................");
-            System.out.printf(String.valueOf(namedQueries.hasQuery(namedQueryName)));
+            System.out.println(String.valueOf(namedQueries.hasQuery(namedQueryName)));
             System.out.println(metadata);
             System.out.println(method.getName());
             System.out.println(namedQueries);

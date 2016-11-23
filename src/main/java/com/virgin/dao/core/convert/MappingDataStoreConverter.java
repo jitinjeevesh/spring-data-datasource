@@ -1,6 +1,8 @@
 package com.virgin.dao.core.convert;
 
 import com.google.cloud.datastore.*;
+import com.virgin.dao.core.query.DynamicQuery;
+import com.virgin.dao.core.query.Criteria.ParameterBinding;
 import com.virgin.dao.mapping.DataStorePersistentEntity;
 import com.virgin.dao.mapping.DataStorePersistentProperty;
 import org.springframework.core.convert.ConversionService;
@@ -12,9 +14,6 @@ import org.springframework.data.mapping.model.*;
 import org.springframework.data.util.ClassTypeInformation;
 import org.springframework.data.util.TypeInformation;
 import org.springframework.util.Assert;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 public class MappingDataStoreConverter extends AbstractDataStoreConverter {
 
@@ -80,12 +79,7 @@ public class MappingDataStoreConverter extends AbstractDataStoreConverter {
     @Override
     public BaseEntity<?> convertToDataStoreType(final Object obj, KeyFactory keyFactory) {
         Object idValue = getIdValue(obj.getClass(), obj);
-        Key key = null;
-        if (idValue instanceof Long) {
-            key = keyFactory.newKey((Long) idValue);
-        } else {
-            key = keyFactory.newKey((String) idValue);
-        }
+        Key key = getKey(idValue, keyFactory);
         final BaseEntity.Builder<?, ?> entityBuilder = Entity.newBuilder(key);
         Class<?> entityType = obj.getClass();
         TypeInformation<?> type = ClassTypeInformation.from(entityType);
@@ -103,6 +97,25 @@ public class MappingDataStoreConverter extends AbstractDataStoreConverter {
             }
         });
         return entityBuilder.build();
+    }
+
+    @Override
+    public BaseEntity<?> convertToDataStoreType(DynamicQuery bindings, Key key, Entity oldEntity) {
+        final BaseEntity.Builder<?, ?> entityBuilder = Entity.newBuilder(key, oldEntity);
+        for (ParameterBinding parameterBinding : bindings.getParameterBindings()) {
+            entityBuilder.set(parameterBinding.getName(), dataStoreMapperFactory.getMapperValue(parameterBinding.getValue()));
+        }
+        return entityBuilder.build();
+    }
+
+    public Key getKey(Object idValue, KeyFactory keyFactory) {
+        Key key = null;
+        if (idValue instanceof Long) {
+            key = keyFactory.newKey((Long) idValue);
+        } else {
+            key = keyFactory.newKey((String) idValue);
+        }
+        return key;
     }
 
     @Override

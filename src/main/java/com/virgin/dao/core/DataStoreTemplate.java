@@ -12,6 +12,8 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.util.Assert;
+import com.virgin.dao.repository.query.PartTreeDataStoreQuery;
+import com.virgin.dao.repository.query.StringBasedDataStoreQuery;
 
 import java.util.*;
 
@@ -101,28 +103,28 @@ public class DataStoreTemplate implements DataStoreOperation {
             } else {
                 binding.put("Limit", 500);
             }
-            GqlQuery.Builder<Entity> queryBuilder = Query.gqlQueryBuilder(Query.ResultType.ENTITY, baseQuery);
+            GqlQuery.Builder<Entity> queryBuilder = Query.newGqlQueryBuilder(Query.ResultType.ENTITY, baseQuery);
             applyNamedBindings(queryBuilder, binding);
-            queryBuilder.allowLiteral(false);
+            queryBuilder.setAllowLiteral(false);
             GqlQuery<Entity> gqlQuery = queryBuilder.build();
             QueryResults<Entity> results = datastore.run(gqlQuery);
             DataStoreQueryResponseImpl<E> dataStoreQueryResponse = new DataStoreQueryResponseImpl<E>();
-            dataStoreQueryResponse.setStartCursor(results.cursorAfter().toUrlSafe());
+            dataStoreQueryResponse.setStartCursor(results.getCursorAfter().toUrlSafe());
             while (results.hasNext()) {
                 Entity result = results.next();
                 E convertedEntity = dataStoreConverter.read(entityClass, result);
                 entities.add(convertedEntity);
             }
             dataStoreQueryResponse.setResults(entities);
-            dataStoreQueryResponse.setEndCursor(results.cursorAfter().toUrlSafe());
+            dataStoreQueryResponse.setEndCursor(results.getCursorAfter().toUrlSafe());
             List<E> tempList = new ArrayList<>();
             if (!allRecords) {
                 do {
                     tempList.clear();
                     String query = baseQuery + " OFFSET @Offset";
-                    GqlQuery.Builder<Entity> queryBuilder1 = Query.gqlQueryBuilder(Query.ResultType.ENTITY, query);
+                    GqlQuery.Builder<Entity> queryBuilder1 = Query.newGqlQueryBuilder(Query.ResultType.ENTITY, query);
                     queryBuilder1.setBinding("Limit", 500);
-                    queryBuilder1.setBinding("Offset", results.cursorAfter());
+                    queryBuilder1.setBinding("Offset", results.getCursorAfter());
                     GqlQuery<Entity> gqlQuery1 = queryBuilder1.build();
                     results = datastore.run(gqlQuery1);
                     while (results.hasNext()) {
@@ -142,7 +144,7 @@ public class DataStoreTemplate implements DataStoreOperation {
     //TODO:Sort is not implemented yet.
     public <E> List<E> findAll(Class<E> entityClass, Pageable pageable) {
         List<E> entities = new ArrayList<>();
-        Query<Entity> query = Query.entityQueryBuilder().kind(determineCollectionName(entityClass)).limit(pageable.getPageSize()).offset(pageable.getOffset()).build();
+        Query<Entity> query = Query.newEntityQueryBuilder().setKind(determineCollectionName(entityClass)).setLimit(pageable.getPageSize()).setOffset(pageable.getOffset()).build();
         QueryResults<Entity> results = datastore.run(query);
         while (results.hasNext()) {
             Entity result = results.next();
@@ -154,8 +156,8 @@ public class DataStoreTemplate implements DataStoreOperation {
 
     @Override
     public long count(Class<?> entityClass) {
-        Query<Entity> query = Query.entityQueryBuilder()
-                .kind("__Stat_Kind__").filter(StructuredQuery.PropertyFilter.eq("kind_name", determineCollectionName(entityClass)))
+        Query<Entity> query = Query.newEntityQueryBuilder()
+                .setKind("__Stat_Kind__").setFilter(StructuredQuery.PropertyFilter.eq("kind_name", determineCollectionName(entityClass)))
                 .build();
         QueryResults<Entity> results = datastore.run(query);
         long count = 0;
@@ -182,8 +184,16 @@ public class DataStoreTemplate implements DataStoreOperation {
         }
     }
 
-    private <E> E doFindOne(StringQuery dataStoreQuery, Class<E> type) {
-        Query<Entity> query = Query.newGqlQueryBuilder(Query.ResultType.ENTITY, dataStoreQuery.getQuery()).setAllowLiteral(true).build();
+    /**
+     * This method is used to execute {@link StringBasedDataStoreQuery} value.
+     *
+     * @param stringQuery  contains the GQL query.
+     * @param type         Datastore Entity mapping Java type
+     * @param <E>Converter java type
+     * @return Converted Java Object
+     */
+    private <E> E doFindOne(StringQuery stringQuery, Class<E> type) {
+        Query<Entity> query = Query.newGqlQueryBuilder(Query.ResultType.ENTITY, stringQuery.getQuery()).setAllowLiteral(true).build();
         QueryResults<Entity> results = datastore.run(query);
         E convertedEntity = null;
         if (results.hasNext()) {
@@ -193,8 +203,18 @@ public class DataStoreTemplate implements DataStoreOperation {
         return convertedEntity;
     }
 
+    /**
+     * This method is used to execute the Dynamic queries {@link PartTreeDataStoreQuery} value.
+     *
+     * @param dynamicQuery contains the dynamic query.
+     * @param type         Datastore Entity mapping Java type
+     * @param <E>Converter java type
+     * @param kindName     Datastore kind name
+     * @return Converted Java Object
+     */
     private <E> E doFindOne(DynamicQuery dynamicQuery, Class<E> type, String kindName) {
         //TODO:Only one object will be fetched for now.
+        System.out.println(dynamicQuery.getPropertyFilter());
         Query<Entity> query = Query.newEntityQueryBuilder().setKind(kindName).setFilter(dynamicQuery.getPropertyFilter()).build();
         QueryResults<Entity> results = datastore.run(query);
         E convertedEntity = null;
@@ -203,6 +223,24 @@ public class DataStoreTemplate implements DataStoreOperation {
             convertedEntity = dataStoreConverter.read(type, newEntity);
         }
         return convertedEntity;
+    }
+
+    @Override
+    public <E> E update(DataStoreQuery dataStoreQuery, Class<E> type, String kindName) {
+        if (dataStoreQuery instanceof DynamicQuery) {
+            return doUpdate((DynamicQuery) dataStoreQuery, type, kindName);
+        } else {
+            throw new InvalidDataAccessApiUsageException("No other query method defined");
+        }
+    }
+
+    public <E> E doUpdate(DynamicQuery dataStoreQuery, Class<E> type, String kindName) {
+        KeyFactory keyFactory = datastore.newKeyFactory().setKind(determineCollectionName(type));
+        Key key = dataStoreConverter.getKey(dataStoreQuery.getIdParameterBinding().getValue(), keyFactory);
+        Entity entity = datastore.get(key);
+        Entity nativeEntity = (Entity) dataStoreConverter.convertToDataStoreType(dataStoreQuery, key, entity);
+        datastore.put(nativeEntity);
+        return null;
     }
 
     String determineCollectionName(Class<?> entityClass) {

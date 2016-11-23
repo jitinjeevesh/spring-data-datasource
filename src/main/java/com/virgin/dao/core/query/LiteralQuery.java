@@ -14,6 +14,6 @@ public class LiteralQuery implements StringQuery {
 
     @Override
     public String getQuery() {
-        return null;
+        return query;
     }
 }

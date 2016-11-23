@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 @Kind
-public class TestKind {
+public class  TestKind {
     @Id
     private Long id;
     private String name;

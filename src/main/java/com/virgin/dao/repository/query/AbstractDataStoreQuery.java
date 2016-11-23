@@ -3,6 +3,7 @@ package com.virgin.dao.repository.query;
 import com.virgin.dao.core.DataStoreOperation;
 import com.virgin.dao.core.query.DataStoreQuery;
 import com.virgin.dao.repository.query.DataStoreQueryExecution.SingleEntityExecution;
+import com.virgin.dao.repository.query.DataStoreQueryExecution.UpdateEntityExecution;
 import com.virgin.dao.repository.query.DataStoreQueryExecution.ResultProcessingConverter;
 import com.virgin.dao.repository.query.DataStoreQueryExecution.ResultProcessingExecution;
 import org.springframework.core.convert.converter.Converter;
@@ -47,6 +48,9 @@ public abstract class AbstractDataStoreQuery implements RepositoryQuery {
         System.out.println(method.isCollectionQuery());
         if (method.isCollectionQuery()) {
             return null;
+        } else if (isUpdateQuery()) {
+            System.out.println("This is a update query............................................................");
+            return new UpdateEntityExecution(operations);
         } else {
             return new SingleEntityExecution(operations, isCountQuery());
         }
@@ -62,4 +66,6 @@ public abstract class AbstractDataStoreQuery implements RepositoryQuery {
     protected abstract boolean isCountQuery();
 
     protected abstract boolean isDeleteQuery();
+
+    protected abstract boolean isUpdateQuery();
 }

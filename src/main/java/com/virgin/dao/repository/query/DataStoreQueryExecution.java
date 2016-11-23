@@ -5,6 +5,7 @@ import com.virgin.dao.core.query.DataStoreQuery;
 import com.virgin.dao.core.query.DynamicQuery;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.EntityInstantiators;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.ResultProcessor;
 import org.springframework.data.repository.query.ReturnedType;
 import org.springframework.util.ClassUtils;
@@ -24,10 +25,40 @@ public interface DataStoreQueryExecution {
         }
 
         @Override
-        public Object execute(DataStoreQuery dynamicQuery, Class<?> type, String kindName) {
-            return countProjection ? operations.count(dynamicQuery, type, kindName) : operations.findOne(dynamicQuery, type, kindName);
+        public Object execute(DataStoreQuery dataStoreQuery, Class<?> type, String kindName) {
+            return countProjection ? operations.count(dataStoreQuery, type, kindName) : operations.findOne(dataStoreQuery, type, kindName);
         }
     }
+
+    static final class UpdateEntityExecution implements DataStoreQueryExecution {
+
+        private final DataStoreOperation operations;
+
+        public UpdateEntityExecution(DataStoreOperation operations) {
+            this.operations = operations;
+        }
+
+        @Override
+        public Object execute(DataStoreQuery dataStoreQuery, Class<?> type, String kindName) {
+            return operations.update(dataStoreQuery, type, kindName);
+        }
+    }
+
+    /*static final class CollectionExecution implements DataStoreQueryExecution {
+
+        private final DataStoreOperation operations;
+        private final Pageable pageable;
+
+        public CollectionExecution(DataStoreOperation operations, Pageable pageable) {
+            this.operations = operations;
+            this.pageable = pageable;
+        }
+
+        @Override
+        public Object execute(DataStoreQuery query, Class<?> type, String collection) {
+            return operations.find(query.with(pageable), type, collection);
+        }
+    }*/
 
     static final class ResultProcessingExecution implements DataStoreQueryExecution {
 

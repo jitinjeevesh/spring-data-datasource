@@ -53,4 +53,10 @@ public class StringBasedDataStoreQuery extends AbstractDataStoreQuery {
     protected boolean isDeleteQuery() {
         return this.isDeleteQuery;
     }
+
+    //Todo:Implement in future
+    @Override
+    protected boolean isUpdateQuery() {
+        return false;
+    }
 }

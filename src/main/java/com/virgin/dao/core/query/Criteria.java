@@ -55,7 +55,12 @@ public class Criteria implements CriteriaDefinition {
         return this.key;
     }
 
+    public Object getValue() {
+        return this.isValue;
+    }
+
     public Criteria is(Object o) {
+        System.out.println("Criteria sets with object" + o);
         if (!isValue.equals(NOT_SET)) {
             throw new InvalidDataAccessApiUsageException("Multiple 'is' values declared. You need to use 'and' with multiple criteria");
         }
@@ -94,4 +99,51 @@ public class Criteria implements CriteriaDefinition {
         return propertyFilter;
     }
 
+    public List<ParameterBinding> getParameterBindings() {
+        List<ParameterBinding> propertyFilters = new ArrayList<ParameterBinding>();
+        for (Criteria criteria : criteriaChain) {
+            if (criteria.getKey().equalsIgnoreCase("id"))
+                continue;
+            propertyFilters.add(criteria.getSingleParameterBinding());
+        }
+        return propertyFilters;
+    }
+
+    @Override
+    public ParameterBinding getIdParameterBindings() {
+        for (Criteria criteria : criteriaChain) {
+            if (criteria.getKey().equalsIgnoreCase("id"))
+                return criteria.getSingleParameterBinding();
+        }
+        return null;
+    }
+
+    protected ParameterBinding getSingleParameterBinding() {
+        return new ParameterBinding(0, this.key, this.isValue);
+    }
+
+    public static class ParameterBinding {
+
+        private final int parameterIndex;
+        private final String name;
+        private final Object value;
+
+        public ParameterBinding(int parameterIndex, String name, Object value) {
+            this.parameterIndex = parameterIndex;
+            this.name = name;
+            this.value = value;
+        }
+
+        public int getParameterIndex() {
+            return parameterIndex;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Object getValue() {
+            return value;
+        }
+    }
 }

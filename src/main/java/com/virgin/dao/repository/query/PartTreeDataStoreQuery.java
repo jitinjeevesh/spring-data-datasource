@@ -3,6 +3,7 @@ package com.virgin.dao.repository.query;
 import com.virgin.dao.core.DataStoreOperation;
 import com.virgin.dao.core.query.DynamicQuery;
 import com.virgin.dao.mapping.DataStorePersistentProperty;
+import com.virgin.dao.repository.query.parser.DataStorePartTree;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.repository.query.ResultProcessor;
 import org.springframework.data.repository.query.ReturnedType;
@@ -10,14 +11,14 @@ import org.springframework.data.repository.query.parser.PartTree;
 
 public class PartTreeDataStoreQuery extends AbstractDataStoreQuery {
 
-    private final PartTree tree;
+    private final DataStorePartTree tree;
     private final MappingContext<?, DataStorePersistentProperty> context;
     private final ResultProcessor processor;
 
     public PartTreeDataStoreQuery(DataStoreQueryMethod dataStoreQueryMethod, DataStoreOperation dataStoreOperation) {
         super(dataStoreQueryMethod, dataStoreOperation);
         this.processor = dataStoreQueryMethod.getResultProcessor();
-        this.tree = new PartTree(dataStoreQueryMethod.getName(), processor.getReturnedType().getDomainType());
+        this.tree = new DataStorePartTree(dataStoreQueryMethod.getName(), processor.getReturnedType().getDomainType());
         this.context = dataStoreOperation.getConverter().getMappingContext();
     }
 
@@ -26,9 +27,8 @@ public class PartTreeDataStoreQuery extends AbstractDataStoreQuery {
         DataStoreQueryCreator dataStoreQueryCreator = new DataStoreQueryCreator(tree, accessor, context);
         DynamicQuery dynamicQuery = dataStoreQueryCreator.createQuery();
         System.out.println("........................Inside create query....................................");
-        System.out.println(dynamicQuery);
-        System.out.println(tree.isLimiting());
-        System.out.println(tree.getMaxResults());
+        System.out.println(dynamicQuery.getParameterBindings());
+        System.out.println(dynamicQuery.getCriteria());
         if (tree.isLimiting()) {
             dynamicQuery.limit(tree.getMaxResults());
         }
@@ -46,5 +46,10 @@ public class PartTreeDataStoreQuery extends AbstractDataStoreQuery {
     @Override
     protected boolean isDeleteQuery() {
         return tree.isDelete();
+    }
+
+    @Override
+    protected boolean isUpdateQuery() {
+        return tree.isUpdate();
     }
 }

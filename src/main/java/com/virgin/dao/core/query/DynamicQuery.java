@@ -2,16 +2,17 @@ package com.virgin.dao.core.query;
 
 import com.google.cloud.datastore.StructuredQuery.Filter;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class DynamicQuery implements DataStoreQuery {
 
     private final Map<String, CriteriaDefinition> criteria = new LinkedHashMap<String, CriteriaDefinition>();
     private int limit;
     private Sort sort;
+    private int offset;
 
     public static DynamicQuery query(CriteriaDefinition criteriaDefinition) {
         return new DynamicQuery(criteriaDefinition);
@@ -30,11 +31,18 @@ public class DynamicQuery implements DataStoreQuery {
         if (existing == null) {
             this.criteria.put(key, criteriaDefinition);
         } else {
-            throw new InvalidDataAccessApiUsageException(
-                    "Due to limitations of the data store you can not add ");
+            throw new InvalidDataAccessApiUsageException("Due to limitations of the data store you can not add ");
         }
-
         return this;
+    }
+
+    public DynamicQuery with(Pageable pageable) {
+        if (pageable == null) {
+            return this;
+        }
+        this.limit = pageable.getPageSize();
+        this.offset = pageable.getOffset();
+        return with(pageable.getSort());
     }
 
     public DynamicQuery limit(int limit) {
@@ -46,13 +54,6 @@ public class DynamicQuery implements DataStoreQuery {
         if (sort == null) {
             return this;
         }
-        /*for (Sort.Order order : sort) {
-            if (order.isIgnoreCase()) {
-                throw new IllegalArgumentException(String.format("Given sort contained an Order for %s with ignore case! "
-                        + "DataStore does not support sorting ignoreing case currently!", order.getProperty()));
-            }
-        }*/
-
         if (this.sort == null) {
             this.sort = sort;
         } else {
@@ -67,5 +68,25 @@ public class DynamicQuery implements DataStoreQuery {
             filter = definition.getCriteriaFilter();
         }
         return filter;
+    }
+
+    //TODO:Index is not yet implemented.
+    public List<Criteria.ParameterBinding> getParameterBindings() {
+        List<Criteria.ParameterBinding> parameterBindings = new LinkedList<>();
+        for (CriteriaDefinition criteriaDefinition : criteria.values()) {
+            parameterBindings = criteriaDefinition.getParameterBindings();
+        }
+        return parameterBindings;
+    }
+
+    public Criteria.ParameterBinding getIdParameterBinding() {
+        for (CriteriaDefinition criteriaDefinition : criteria.values()) {
+            return criteriaDefinition.getIdParameterBindings();
+        }
+        return null;
+    }
+
+    public List<CriteriaDefinition> getCriteria() {
+        return new ArrayList<CriteriaDefinition>(this.criteria.values());
     }
 }

@@ -26,7 +26,9 @@ public interface DataStoreOperation {
 
     long count(Class<?> entityClass);
 
-    long count(DataStoreQuery dynamicQuery, Class<?> type, String kindName);
+    long count(DataStoreQuery dataStoreQuery, Class<?> type, String kindName);
 
-    <E> E findOne(DataStoreQuery dynamicQuery, Class<E> type, String kindName);
+    <E> E findOne(DataStoreQuery dataStoreQuery, Class<E> type, String kindName);
+
+    <E> E update(DataStoreQuery dataStoreQuery, Class<E> type, String kindName);
 }

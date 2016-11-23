@@ -1,10 +1,9 @@
 package com.virgin;
 
-import com.google.cloud.datastore.EntityQuery;
-import com.google.cloud.datastore.Query;
-import com.google.cloud.datastore.StructuredQuery;
+import com.google.cloud.datastore.*;
 import com.jmethods.catatumbo.EntityManager;
 import com.jmethods.catatumbo.EntityManagerFactory;
+import com.virgin.dao.core.DataStoreConstants;
 import com.virgin.dao.repository.config.EnableDataStoreRepositories;
 import com.virgin.example.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,8 @@ public class Application {
 //        System.out.println(settingsRepository.findByFeature("STRIPE"));
 //        System.out.println(testKindRepository.findByNameAndBooleanPremitive("Jeevesh", true));
 //        System.out.println(testKindRepository.findAllByName("Jeevesh"));
-        System.out.println(testKindRepository.findByName("Jeevesh",true));
+//        System.out.println(testKindRepository.updateByName(5728694408577024l, "Jeevesh Pan"));
+        System.out.println(testKindRepository.findByName("Jeevesh Pan",true));
         //TODO:User
         /*VirginRedUser virginRedUser = virginUserRepository.findOne(4503633047584768l);
         System.out.println(virginRedUser.getPartnerList());
@@ -58,11 +58,11 @@ public class Application {
         System.out.println(virginRedUser);*/
 
         //TODO:Test updating Kind
-     /*   ContactInfo contactInfo = new ContactInfo();
+       /* ContactInfo contactInfo = new ContactInfo();
         contactInfo.setCity("Lucknow");
         contactInfo.setCountry("India");
         TestKind testKind = new TestKind();
-        testKind.setId(5728694408577024l);
+//        testKind.setId(5728694408577024l);
         testKind.setName("Jeevesh");
         testKind.setContactInfo(contactInfo);
         testKind.setRoles(new ArrayList<String>() {{
@@ -114,6 +114,23 @@ public class Application {
         //TODO:Datastore count
 //        System.out.println(settingsRepository.count());
 
+        //TODO:Count query
+
+       /* Datastore datastore = DatastoreOptions.defaultInstance().service();
+        Query<Entity> query = Query.newEntityQueryBuilder()
+                .setKind("__Stat_PropertyName_Kind__").setFilter(StructuredQuery.CompositeFilter.and(StructuredQuery.PropertyFilter.eq("kind_name", "TestKind"),
+                        StructuredQuery.PropertyFilter.eq("property_name", "name")))
+                .build();
+        QueryResults<Entity> results = datastore.run(query);
+        long count = 0;
+        while (results.hasNext()) {
+            Entity newEntity = results.next();
+            System.out.println("............................................................");
+            System.out.println(newEntity);
+            count = newEntity.getLong(DataStoreConstants.TOTAL_COUNT_PROPERTY_NAME);
+        }
+        System.out.println(count);*/
+
         //TODO:Page request
        /* Long startTime = new Date().getTime();
         Page<Settings> settingses = settingsRepository.findAll(new PageRequest(2, 3));
@@ -126,8 +143,8 @@ public class Application {
         System.out.println(endTime - startTime);
         System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");*/
 
-        EntityManagerFactory emf = EntityManagerFactory.getInstance();
-        EntityManager em = emf.createDefaultEntityManager();
+       /* EntityManagerFactory emf = EntityManagerFactory.getInstance();
+        EntityManager em = emf.createDefaultEntityManager();*/
         /*Settings settings = em.load(Settings.class, 4876109476790272l);
         System.out.println(settings);*/
 
@@ -172,7 +189,7 @@ public class Application {
 
         System.out.println(settings);
         System.out.println(settings.size());*/
-        EntityQuery query = Query.newEntityQueryBuilder().setKind("Settings").setFilter(StructuredQuery.PropertyFilter.eq("environment", "PROD")).build();
+//        EntityQuery query = Query.newEntityQueryBuilder().setKind("Settings").setFilter(StructuredQuery.PropertyFilter.eq("environment", "PROD")).build();
       /*  Datastore datastore = DatastoreOptions.defaultInstance().service();
         KeyFactory keyFactory = datastore.newKeyFactory().kind("Settings");
 
