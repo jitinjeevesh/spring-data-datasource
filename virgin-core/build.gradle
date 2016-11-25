@@ -1,0 +1,19 @@
+version '0.1'
+
+apply plugin: 'java'
+apply plugin: 'io.spring.dependency-management'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+repositories {
+    mavenCentral()
+    maven {
+        url "http://maven.ow2.org/maven2/"
+    }
+    maven { url "http://maven.ow2.org/maven2-snapshot" }
+}
+
+dependencies {
+    compile project(':spring-data-datasource')
+}

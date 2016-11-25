@@ -1,10 +1,6 @@
 package com.virgin;
 
-import com.google.cloud.datastore.*;
-import com.jmethods.catatumbo.EntityManager;
-import com.jmethods.catatumbo.EntityManagerFactory;
-import com.virgin.dao.core.DataStoreConstants;
-import com.virgin.dao.repository.config.EnableDataStoreRepositories;
+import com.spring.datasource.repository.config.EnableDataStoreRepositories;
 import com.virgin.example.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -13,11 +9,11 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 
 @SpringBootApplication
 @EnableDataStoreRepositories
-@ComponentScan({"sample", "com.virgin", "com.virgin.dao"})
+@ComponentScan({"sample", "com.virgin"})
 public class Application {
 
     @Autowired
@@ -40,9 +36,9 @@ public class Application {
 //        System.out.println(testKindRepository.findByNameAndBooleanPremitive("Jeevesh", true));
 //        System.out.println(testKindRepository.findAllByName("Jeevesh"));
 //        System.out.println(testKindRepository.updateByName(5728694408577024l, "Jeevesh Pan"));
-        System.out.println(testKindRepository.findByName("Jeevesh Pan",true));
+//        System.out.println(testKindRepository.findByName("Jeevesh Pan",true));
         //TODO:User
-        /*VirginRedUser virginRedUser = virginUserRepository.findOne(4503633047584768l);
+        VirginRedUser virginRedUser = virginUserRepository.findOne(4503633047584768l);
         System.out.println(virginRedUser.getPartnerList());
         if (!virginRedUser.getPartnerList().isEmpty())
             for (Object l : virginRedUser.getPartnerList()) {
@@ -55,7 +51,7 @@ public class Application {
             System.out.println(s.getClass());
         }
         System.out.println(virginRedUser.getContactInfo());
-        System.out.println(virginRedUser);*/
+        System.out.println(virginRedUser);
 
         //TODO:Test updating Kind
        /* ContactInfo contactInfo = new ContactInfo();

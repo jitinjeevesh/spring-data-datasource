@@ -1,2 +1,3 @@
-include 'datastore'
+include 'virgin-core'
+include 'spring-data-datasource'
 

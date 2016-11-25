@@ -1,0 +1,38 @@
+group 'spring-data'
+version '0.1'
+
+apply plugin: 'java'
+apply plugin: 'io.spring.dependency-management'
+
+sourceCompatibility = 1.7
+
+repositories {
+    mavenCentral()
+    maven {
+        url "http://maven.ow2.org/maven2/"
+    }
+    maven { url "http://maven.ow2.org/maven2-snapshot" }
+    maven { url "https://mvnrepository.com/artifact/com.google.cloud/gcloud-java-datastore" }
+}
+
+dependencies {
+    compile group: 'org.springframework', name: 'spring-tx', version: '4.2.8.RELEASE'
+    compile group: 'org.springframework', name: 'spring-context', version: '4.2.8.RELEASE'
+    compile group: 'org.springframework', name: 'spring-beans', version: '4.2.8.RELEASE'
+    compile group: 'org.springframework', name: 'spring-core', version: '4.2.8.RELEASE'
+    compile group: 'org.springframework', name: 'spring-orm', version: '4.2.8.RELEASE'
+    compile group: 'org.springframework', name: 'spring-expression', version: '4.2.8.RELEASE'
+//    compile group: 'org.springframework.data', name: 'spring-data-commons-core', version: '1.4.1.RELEASE'
+    compile group: 'org.springframework.data', name: 'spring-data-commons', version: '1.11.5.RELEASE'
+    compile 'com.google.cloud:google-cloud:0.5.0'
+    compile group: 'org.springframework', name: 'spring-aspects', version: '4.2.3.RELEASE'
+    compile group: 'javax.enterprise', name: 'cdi-api', version: '1.2'
+    compile group: 'javax.annotation', name: 'jsr250-api', version: '1.0'
+    compile group: 'org.aspectj', name: 'aspectjrt', version: '1.8.9'
+    compile "org.codehaus.jackson:jackson-mapper-asl:1.9.13"
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.2.3'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.2.3'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.2.3'
+
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}

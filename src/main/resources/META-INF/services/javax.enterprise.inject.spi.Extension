@@ -1,1 +1,1 @@
-com.virgin.dao.repository.cdi.DataStoreRepositoryExtension
+com.spring.datasource.dao.repository.cdi.DataStoreRepositoryExtension
