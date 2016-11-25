@@ -63,8 +63,6 @@ public class DataStoreRepositoryConfigExtension extends RepositoryConfigurationE
     @Override
     public void postProcess(BeanDefinitionBuilder builder, AnnotationRepositoryConfigurationSource config) {
         AnnotationAttributes attributes = config.getAttributes();
-        System.out.println("..........................................................................");
-        System.out.println(attributes);
         String dataStoreTemplateRef = attributes.getString("dataStoreTemplateRef");
         if (StringUtils.hasText(dataStoreTemplateRef))
             builder.addPropertyReference("dataStoreOperation", attributes.getString("dataStoreTemplateRef"));
@@ -76,7 +74,6 @@ public class DataStoreRepositoryConfigExtension extends RepositoryConfigurationE
 
         super.registerBeansForRoot(registry, config);
 
-        System.out.println("............................registerBeansForRoot.......................................");
         Object source = config.getSource();
 
         //This is DataStoreMappingContext bean definition.

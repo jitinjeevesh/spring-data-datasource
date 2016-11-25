@@ -27,8 +27,6 @@ public class DefaultDataStoreMapper implements DataStoreMapper {
 
     @Override
     public Object convert(Value<?> input) {
-        System.out.println(".....................Inside default converter..................");
-        System.out.println(input);
         return conversionService.convert(input, javaClass);
     }
 }

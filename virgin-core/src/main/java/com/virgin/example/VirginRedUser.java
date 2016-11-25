@@ -2,17 +2,17 @@ package com.virgin.example;
 
 import com.spring.datasource.core.mapping.Embedded;
 import com.spring.datasource.core.mapping.Kind;
-import org.springframework.data.annotation.Id;
+import com.virgin.baseentity.AbstractLongEntity;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Kind
-public class VirginRedUser {
+public class VirginRedUser extends AbstractLongEntity {
 
-    @Id
-    private Long id;
+//    @Id
+//    private Long id;
     private String email;
     private String postcode;
     private Date dob;
@@ -51,13 +51,13 @@ public class VirginRedUser {
     private Long refBy;
     private String referCode;
 
-    public Long getId() {
+   /* public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
+    }*/
 
     public String getLocale() {
         return locale;

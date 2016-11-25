@@ -86,11 +86,6 @@ public class DataStoreRepositoryFactory extends RepositoryFactorySupport {
         public RepositoryQuery resolveQuery(Method method, RepositoryMetadata repositoryMetadata, NamedQueries namedQueries) {
             DataStoreQueryMethod queryMethod = new DataStoreQueryMethod(method, repositoryMetadata, mappingContext);
             String namedQueryName = queryMethod.getNamedQueryName();
-
-            System.out.println("....................Inside resolve query......................................");
-            System.out.println(String.valueOf(namedQueries.hasQuery(namedQueryName)));
-            System.out.println(method.getName());
-            System.out.println(namedQueries);
             if (queryMethod.hasAnnotatedQuery()) {
                 return new StringBasedDataStoreQuery(queryMethod, operations, EXPRESSION_PARSER, evaluationContextProvider);
             } else {
