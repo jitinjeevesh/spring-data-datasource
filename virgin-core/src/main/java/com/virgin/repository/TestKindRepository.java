@@ -1,7 +1,8 @@
-package com.virgin.example;
+package com.virgin.repository;
 
 import com.spring.datasource.repository.DataStoreRepository;
 import com.spring.datasource.repository.Query;
+import com.virgin.domain.TestKind;
 
 import java.util.List;
 

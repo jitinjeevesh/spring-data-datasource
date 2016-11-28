@@ -3,39 +3,81 @@ package com.spring.datasource.core;
 import com.google.cloud.AuthCredentials;
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.DatastoreOptions;
+import com.spring.datasource.core.convert.DataStoreUtil;
 import com.spring.datasource.core.exception.DataStoreEntityManagerFactoryException;
+import org.springframework.util.Assert;
+
+import java.io.*;
+import java.net.URL;
+import java.util.Objects;
+import java.util.Scanner;
 
 /**
  * A factory class for producing {@link Datastore}s.
  *
  * @author Jeevesh Pandey
  */
-//TODO: Implement more factory method to create instance via JSON credentials.
 public class SimpleDataStoredFactory implements DataStoreFactory {
 
-    private static final SimpleDataStoredFactory INSTANCE = new SimpleDataStoredFactory();
+    private DataStoreConfig dataStoreConfig;
 
-    public static SimpleDataStoredFactory getInstance() {
-        return INSTANCE;
+    public SimpleDataStoredFactory(DataStoreConfig dataStoreConfig) {
+        this.dataStoreConfig = dataStoreConfig;
     }
 
     public Datastore getDefaultDataStore() {
-        return createDefaultEntityManager(null);
+        if (dataStoreConfig.getConnection().equalsIgnoreCase("file")) {
+            ClassLoader classLoader = getClass().getClassLoader();
+            URL url = classLoader.getResource(dataStoreConfig.getJsonFile());
+            Assert.notNull(url, "Data store credential file must not be null");
+            File file = new File(url.getFile());
+            return createEntityManager(dataStoreConfig.getProjectId(), file, dataStoreConfig.getNamespace());
+        } else {
+            return createDefaultEntityManager(null);
+        }
     }
 
     public Datastore createDefaultEntityManager(String namespace) {
         try {
             AuthCredentials authCredentials = AuthCredentials.createApplicationDefaults();
-            DatastoreOptions.Builder datastoreOptionsBuilder = DatastoreOptions.builder()
-                    .authCredentials(authCredentials);
+            DatastoreOptions.Builder datastoreOptionsBuilder = DatastoreOptions.newBuilder()
+                    .setAuthCredentials(authCredentials);
             if (namespace != null) {
                 datastoreOptionsBuilder.namespace(namespace);
             }
-            //TODO:Exception thrown.
-            return datastoreOptionsBuilder.build().service();
+            return datastoreOptionsBuilder.build().getService();
         } catch (Exception exp) {
             throw new DataStoreEntityManagerFactoryException(exp);
         }
     }
 
+    public Datastore createEntityManager(String projectId, File jsonCredentialsFile) {
+        return createEntityManager(projectId, jsonCredentialsFile, null);
+    }
+
+    public Datastore createEntityManager(String projectId, File jsonCredentialsFile, String namespace) {
+        try {
+            return createEntityManager(projectId, new FileInputStream(jsonCredentialsFile), namespace);
+        } catch (Exception exp) {
+            throw new DataStoreEntityManagerFactoryException(exp);
+        }
+    }
+
+    public Datastore createEntityManager(String projectId, InputStream jsonCredentialsStream, String namespace) {
+        try {
+            AuthCredentials authCredentials = AuthCredentials.createForJson(jsonCredentialsStream);
+            DatastoreOptions.Builder datastoreOptionsBuilder = DatastoreOptions.newBuilder().setAuthCredentials(authCredentials);
+            if (projectId != null && !projectId.equals("")) {
+                datastoreOptionsBuilder.setProjectId(projectId);
+            }
+            if (namespace != null && !namespace.equals("")) {
+                datastoreOptionsBuilder.namespace(namespace);
+            }
+            return datastoreOptionsBuilder.build().getService();
+        } catch (Exception exp) {
+            throw new DataStoreEntityManagerFactoryException(exp);
+        } finally {
+            DataStoreUtil.close(jsonCredentialsStream);
+        }
+    }
 }

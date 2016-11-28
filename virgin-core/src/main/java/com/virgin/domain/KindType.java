@@ -1,4 +1,4 @@
-package com.virgin.example;
+package com.virgin.domain;
 
 public enum KindType {
     TEST("Test"),

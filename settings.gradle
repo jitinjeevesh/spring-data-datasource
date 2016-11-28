@@ -1,3 +1,4 @@
 include 'virgin-core'
 include 'spring-data-datasource'
+include 'cache'
 

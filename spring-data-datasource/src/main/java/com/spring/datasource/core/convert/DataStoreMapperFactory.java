@@ -9,10 +9,7 @@ import org.springframework.core.convert.support.GenericConversionService;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -104,6 +101,8 @@ public class DataStoreMapperFactory {
         DataStoreMapper mapper;
         if (List.class.isAssignableFrom(clazz)) {
             mapper = new ListValueDataStoreMapper(clazz);
+        } else if (Map.class.isAssignableFrom(clazz)) {
+            mapper = new MapValueDataStoreMapper(clazz);
         } else if (Set.class.isAssignableFrom(clazz)) {
             mapper = new SetValueDataStoreMapper(clazz);
         } else if (clazz.isAnnotationPresent(Embeddable.class)) {
@@ -125,6 +124,8 @@ public class DataStoreMapperFactory {
         DataStoreMapper mapper;
         if (List.class.isAssignableFrom(rawClass)) {
             mapper = new ListValueDataStoreMapper(type);
+        } else if (Map.class.isAssignableFrom(rawClass)) {
+            mapper = new MapValueDataStoreMapper(type);
         } else if (Set.class.isAssignableFrom(rawClass)) {
             mapper = new SetValueDataStoreMapper(type);
         } else if (rawClass.isAnnotationPresent(Embeddable.class)) {

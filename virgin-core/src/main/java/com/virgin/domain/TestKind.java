@@ -1,4 +1,4 @@
-package com.virgin.example;
+package com.virgin.domain;
 
 import com.spring.datasource.core.mapping.Embedded;
 import com.spring.datasource.core.mapping.Kind;

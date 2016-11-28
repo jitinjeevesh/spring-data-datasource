@@ -1,5 +1,6 @@
 package com.spring.datasource.repository.config;
 
+import com.spring.datasource.core.DataStoreConfig;
 import com.spring.datasource.core.SimpleDataStoredFactory;
 import com.spring.datasource.core.DataStoreTemplate;
 import com.spring.datasource.core.convert.MappingDataStoreConverter;
@@ -89,12 +90,22 @@ public class DataStoreRepositoryConfigExtension extends RepositoryConfigurationE
         mappingDataStoreConverterBeanDefinition.setConstructorArgumentValues(mappingDataStoreConverterConstructorArgumentValues);
         registerIfNotAlreadyRegistered(mappingDataStoreConverterBeanDefinition, registry, "mappingDataStoreConverter", source);
 
+        RootBeanDefinition configRootBeanDefinition = new RootBeanDefinition(DataStoreConfig.class);
+        configRootBeanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_NAME);
+        registerIfNotAlreadyRegistered(configRootBeanDefinition, registry, "dataStoreConfig", source);
+
+        RootBeanDefinition simpleDataStoredFactoryBeanDefinition = new RootBeanDefinition(SimpleDataStoredFactory.class);
+        simpleDataStoredFactoryBeanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_CONSTRUCTOR);
+        ConstructorArgumentValues simpleDataStoredFactoryBeanconstructorArgumentValues = new ConstructorArgumentValues();
+        simpleDataStoredFactoryBeanconstructorArgumentValues.addIndexedArgumentValue(0, registry.getBeanDefinition("dataStoreConfig"));
+        simpleDataStoredFactoryBeanDefinition.setConstructorArgumentValues(simpleDataStoredFactoryBeanconstructorArgumentValues);
+        registerIfNotAlreadyRegistered(simpleDataStoredFactoryBeanDefinition, registry, "simpleDataStoredFactory", source);
 
         //This is datastore template bean definition.
         RootBeanDefinition rootBeanDefinition = new RootBeanDefinition(DataStoreTemplate.class);
         rootBeanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_CONSTRUCTOR);
         ConstructorArgumentValues constructorArgumentValues = new ConstructorArgumentValues();
-        constructorArgumentValues.addIndexedArgumentValue(0, SimpleDataStoredFactory.getInstance().getDefaultDataStore());//Change
+        constructorArgumentValues.addIndexedArgumentValue(0, registry.getBeanDefinition("simpleDataStoredFactory"));
         constructorArgumentValues.addIndexedArgumentValue(1, registry.getBeanDefinition("mappingDataStoreConverter"));
         rootBeanDefinition.setConstructorArgumentValues(constructorArgumentValues);
         registerIfNotAlreadyRegistered(rootBeanDefinition, registry, "dataStoreTemplate", source);

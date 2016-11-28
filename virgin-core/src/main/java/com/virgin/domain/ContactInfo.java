@@ -1,4 +1,4 @@
-package com.virgin.example;
+package com.virgin.domain;
 
 import com.spring.datasource.core.mapping.Embeddable;
 import org.springframework.data.annotation.Transient;

@@ -1,11 +1,8 @@
 spring:
   data:
-      mongodb:
-            uri: mongodb://localhost/fameLive_dev
-  rabbitmq.virtual-host: fameplus_dev
-  rabbitmq.username: guest
-  rabbitmq.password: guest
-  rabbitmq.host: localhost
-
+      datasource:
+        connection: file
+        projectId:  virgin-red-test
+        jsonFile: virgin-red-test-cff5a3523ca6.json
 server:
   port: 8090

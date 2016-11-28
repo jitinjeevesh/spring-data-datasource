@@ -29,9 +29,9 @@ public class DataStoreTemplate implements DataStoreOperation {
     private final MappingContext<? extends DataStorePersistentEntity<?>, DataStorePersistentProperty> mappingContext;
     private Datastore datastore;
 
-    public DataStoreTemplate(Datastore datastore, DataStoreConverter dataStoreConverter) {
+    public DataStoreTemplate(DataStoreFactory datastore, DataStoreConverter dataStoreConverter) {
         Assert.notNull(datastore, DATASTORE_MUST_NOT_BE_NULL);
-        this.datastore = datastore;
+        this.datastore = datastore.getDefaultDataStore();
         this.dataStoreConverter = dataStoreConverter;
         this.mappingContext = this.dataStoreConverter.getMappingContext();
     }
