@@ -1,22 +1,20 @@
-package com.virgin.domain;
+package com.virgin.mapping;
 
-import com.spring.datasource.core.mapping.Embedded;
-import com.spring.datasource.core.mapping.Kind;
-import com.virgin.baseentity.AbstractLongEntity;
-
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Kind
-public class VirginRedUser extends AbstractLongEntity {
+public class VirginRedUser implements Serializable {
 
+    private static final long serialVersionUID = -1l;
+
+    private Long id;
     private String email;
     private String postcode;
     private Date dob;
     private String lastName;
     private String firstName;
-    @Embedded
     private ContactInfo contactInfo;
     private String socialProviderId;
     private String gender;
@@ -47,6 +45,14 @@ public class VirginRedUser extends AbstractLongEntity {
 
     private Long refBy;
     private String referCode;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getLocale() {
         return locale;

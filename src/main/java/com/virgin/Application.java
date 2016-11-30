@@ -1,7 +1,10 @@
 package com.virgin;
 
 import com.spring.datasource.repository.config.EnableDataStoreRepositories;
-import com.virgin.domain.*;
+import com.virgin.config.Cache;
+import com.virgin.config.CacheName;
+import com.virgin.domain.MasterBrand;
+import com.virgin.mapping.VirginRedUser;
 import com.virgin.repository.MasterBrandRepository;
 import com.virgin.repository.SettingsRepository;
 import com.virgin.repository.TestKindRepository;
@@ -27,16 +30,29 @@ public class Application {
     @Autowired
     private MasterBrandRepository masterBrandRepository;
 
+    @Autowired
+    private Cache<Long, VirginRedUser> virginRedUserCache;
+
     public static void main(String[] args) throws InterruptedException {
         ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
         Application mainObj = context.getBean(Application.class);
         mainObj.init();
     }
 
-
     public void init() {
-        MasterBrand masterBrand = masterBrandRepository.findOne(5038845028466688l);
-        System.out.println(masterBrand.getSegments());
+//        MasterBrand masterBrand = masterBrandRepository.findOne(5038845028466688l);
+//        System.out.println(masterBrand.getSegments());
+        VirginRedUser virginRedUser = new VirginRedUser();
+        virginRedUser.setFirstName("Jeevesh");
+        virginRedUserCache.put(1l, virginRedUser, CacheName.USER_CACHE);
+
+        VirginRedUser virginRedUser1 = virginRedUserCache.get(1l, CacheName.USER_CACHE);
+        System.out.println(virginRedUser1);
+
+        System.out.println(virginRedUserCache.count(CacheName.USER_CACHE));
+        System.out.println(virginRedUserCache.all(CacheName.USER_CACHE));
+        System.out.println(virginRedUserCache.keySet(CacheName.USER_CACHE));
+        System.out.println(virginRedUserCache.values(CacheName.USER_CACHE));
         //TODO:Dynamic Query
 //        System.out.println(settingsRepository.findByFeature("STRIPE"));
 //        System.out.println(testKindRepository.findByNameAndBooleanPremitive("Jeevesh", true));

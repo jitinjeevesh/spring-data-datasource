@@ -6,3 +6,6 @@ spring:
         jsonFile: virgin-red-test-cff5a3523ca6.json
 server:
   port: 8090
+
+cache.type: Hazelcast
+cache.url: 127.0.0.1:5701
