@@ -1,7 +1,7 @@
 spring:
   data:
       datasource:
-        connection: file
+        connection: default
         projectId:  virgin-red-test
         jsonFile: virgin-red-test-cff5a3523ca6.json
 server:
@@ -9,3 +9,7 @@ server:
 
 cache.type: Hazelcast
 cache.url: 127.0.0.1:5701
+
+#logging:
+#  pattern:
+#    console: '%d{HH:mm:ss.SSS} | %msg%n'

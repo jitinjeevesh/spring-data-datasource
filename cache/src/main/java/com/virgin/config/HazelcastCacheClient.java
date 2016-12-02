@@ -1,6 +1,7 @@
 package com.virgin.config;
 
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IList;
 import com.hazelcast.core.IMap;
 
 import java.util.Collection;
@@ -20,6 +21,7 @@ public class HazelcastCacheClient implements CacheClient {
     @Override
     public <K, V> V get(K key, CacheName cacheName) {
         IMap<K, V> map = hazelcastInstance.getMap(cacheName.getValue());
+        IList list = hazelcastInstance.getList(cacheName.getValue());
         return map.get(key);
     }
 

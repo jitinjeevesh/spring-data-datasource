@@ -4,17 +4,18 @@ import com.spring.datasource.repository.config.EnableDataStoreRepositories;
 import com.virgin.config.Cache;
 import com.virgin.config.CacheName;
 import com.virgin.domain.MasterBrand;
+import com.virgin.domain.Settings;
 import com.virgin.mapping.VirginRedUser;
-import com.virgin.repository.MasterBrandRepository;
-import com.virgin.repository.SettingsRepository;
-import com.virgin.repository.TestKindRepository;
-import com.virgin.repository.VirginUserRepository;
+import com.virgin.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+
+import java.util.List;
 
 @SpringBootApplication
 @EnableDataStoreRepositories
@@ -29,6 +30,8 @@ public class Application {
     private TestKindRepository testKindRepository;
     @Autowired
     private MasterBrandRepository masterBrandRepository;
+    @Autowired
+    private VcoValidationInfoRepository vcoValidationInfoRepository;
 
     @Autowired
     private Cache<Long, VirginRedUser> virginRedUserCache;
@@ -40,8 +43,10 @@ public class Application {
     }
 
     public void init() {
-//        MasterBrand masterBrand = masterBrandRepository.findOne(5038845028466688l);
-//        System.out.println(masterBrand.getSegments());
+//        List<Settings> settingses = settingsRepository.findAllByDefaultValueAndEnvironment(true, "PROD");
+//        System.out.println(settingses);
+//        vcoValidationInfoRepository.findAllByValidationResult("VALIDATED");
+
         VirginRedUser virginRedUser = new VirginRedUser();
         virginRedUser.setFirstName("Jeevesh");
         virginRedUserCache.put(1l, virginRedUser, CacheName.USER_CACHE);
@@ -53,6 +58,7 @@ public class Application {
         System.out.println(virginRedUserCache.all(CacheName.USER_CACHE));
         System.out.println(virginRedUserCache.keySet(CacheName.USER_CACHE));
         System.out.println(virginRedUserCache.values(CacheName.USER_CACHE));
+
         //TODO:Dynamic Query
 //        System.out.println(settingsRepository.findByFeature("STRIPE"));
 //        System.out.println(testKindRepository.findByNameAndBooleanPremitive("Jeevesh", true));

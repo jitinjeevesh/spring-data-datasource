@@ -3,6 +3,7 @@ package com.spring.datasource.core;
 import com.google.cloud.datastore.*;
 import com.google.cloud.datastore.Query;
 import com.spring.datasource.core.convert.DataStoreConverter;
+import com.spring.datasource.core.query.Criteria;
 import com.spring.datasource.core.query.DataStoreQuery;
 import com.spring.datasource.core.query.DynamicQuery;
 import com.spring.datasource.core.query.StringQuery;
@@ -159,26 +160,63 @@ public class DataStoreTemplate implements DataStoreOperation {
     @Override
     public <E> List<E> findAll(DataStoreQuery dataStoreQuery, Pageable pageable, Class<E> type, String kindName) {
         if (dataStoreQuery instanceof DynamicQuery) {
-            return doFind((DynamicQuery) ((DynamicQuery) dataStoreQuery).with(pageable), type, kindName);
+            return doFind(((DynamicQuery) dataStoreQuery).with(pageable), type, kindName);
         } else {
             throw new InvalidDataAccessApiUsageException("No other query method defined");
         }
     }
 
     private <E> List<E> doFind(DynamicQuery dynamicQuery, Class<E> type, String kindName) {
-        System.out.println(dynamicQuery.getLimit());
         int limit = dynamicQuery.getLimit() < 0 ? dynamicQuery.getLimit() : 500;
         int offset = dynamicQuery.getOffset() < 0 ? dynamicQuery.getOffset() : 0;
-        System.out.println("...............................limit...............................................");
-        System.out.println(limit);
-        System.out.println(offset);
+        List<Criteria.ParameterBinding> parameterBindings = dynamicQuery.getParameterBindings();
+        StringBuilder stringBuffer = new StringBuilder("SELECT * FROM " + kindName + " where ");
+        for (Criteria.ParameterBinding parameterBinding : parameterBindings) {
+            stringBuffer.append(parameterBinding.getName()).append(" = ").append("@").append(parameterBinding.getName()).append(" AND ");
+        }
+        String stringQuery = stringBuffer.toString();
+        String finalQuery = stringQuery.substring(0, stringQuery.lastIndexOf("AND "));
         List<E> entities = new ArrayList<>();
-        Query<Entity> query = Query.newEntityQueryBuilder().setKind(kindName).setLimit(limit).setOffset(offset).build();
-        QueryResults<Entity> results = datastore.run(query);
-        while (results.hasNext()) {
-            Entity result = results.next();
-            E convertedEntity = dataStoreConverter.read(type, result);
-            entities.add(convertedEntity);
+        try {
+            boolean allRecords = false;
+            String baseQuery = finalQuery + " LIMIT @Limit";
+            Map<String, Object> binding = new HashMap<String, Object>();
+            binding.put("Limit", limit);
+            for (Criteria.ParameterBinding parameterBinding : parameterBindings) {
+                binding.put(parameterBinding.getName(), parameterBinding.getValue());
+            }
+            GqlQuery.Builder<Entity> queryBuilder = Query.newGqlQueryBuilder(Query.ResultType.ENTITY, baseQuery);
+            applyNamedBindings(queryBuilder, binding);
+            queryBuilder.setAllowLiteral(false);
+            GqlQuery<Entity> gqlQuery = queryBuilder.build();
+            QueryResults<Entity> results = datastore.run(gqlQuery);
+            DataStoreQueryResponseImpl<E> dataStoreQueryResponse = new DataStoreQueryResponseImpl<E>();
+            dataStoreQueryResponse.setStartCursor(results.getCursorAfter().toUrlSafe());
+            while (results.hasNext()) {
+                Entity result = results.next();
+                E convertedEntity = dataStoreConverter.read(type, result);
+                entities.add(convertedEntity);
+            }
+            dataStoreQueryResponse.setResults(entities);
+            dataStoreQueryResponse.setEndCursor(results.getCursorAfter().toUrlSafe());
+            List<E> tempList = new ArrayList<>();
+            do {
+                tempList.clear();
+                String query = baseQuery + " OFFSET @Offset";
+                GqlQuery.Builder<Entity> queryBuilder1 = Query.newGqlQueryBuilder(Query.ResultType.ENTITY, query);
+                binding.put("Offset", results.getCursorAfter());
+                applyNamedBindings(queryBuilder1, binding);
+                GqlQuery<Entity> gqlQuery1 = queryBuilder1.build();
+                results = datastore.run(gqlQuery1);
+                while (results.hasNext()) {
+                    Entity result = results.next();
+                    E convertedEntity = dataStoreConverter.read(type, result);
+                    entities.add(convertedEntity);
+                    tempList.add(convertedEntity);
+                }
+            } while (!tempList.isEmpty());
+        } catch (DatastoreException exp) {
+            exp.printStackTrace();
         }
         return entities;
     }
@@ -243,7 +281,6 @@ public class DataStoreTemplate implements DataStoreOperation {
      */
     private <E> E doFindOne(DynamicQuery dynamicQuery, Class<E> type, String kindName) {
         //TODO:Only one object will be fetched for now.
-        System.out.println(dynamicQuery.getPropertyFilter());
         Query<Entity> query = Query.newEntityQueryBuilder().setKind(kindName).setFilter(dynamicQuery.getPropertyFilter()).build();
         QueryResults<Entity> results = datastore.run(query);
         E convertedEntity = null;
@@ -299,6 +336,8 @@ public class DataStoreTemplate implements DataStoreOperation {
                     queryBuilder.setBinding(bindingName, (double) bindingValue);
                 } else if (bindingValue instanceof Boolean) {
                     queryBuilder.setBinding(bindingName, (boolean) bindingValue);
+                } else if (boolean.class.isAssignableFrom(bindingValue.getClass())) {
+                    queryBuilder.setBinding(bindingName, (boolean) bindingValue);
                 } else if (bindingValue instanceof String) {
                     queryBuilder.setBinding(bindingName, (String) bindingValue);
                 } else if (bindingValue instanceof Calendar) {
@@ -307,6 +346,8 @@ public class DataStoreTemplate implements DataStoreOperation {
                     queryBuilder.setBinding(bindingName, DateTime.copyFrom((Date) bindingValue));
                 } else if (bindingValue instanceof byte[]) {
                     queryBuilder.setBinding(bindingName, Blob.copyFrom((byte[]) bindingValue));
+                } else if (bindingValue instanceof Cursor) {
+                    queryBuilder.setBinding(bindingName, (Cursor) bindingValue);
                 }
                 //TODO:THis is used when cursor is used.
                 /* else if (bindingValue instanceof DatastoreCursor) {

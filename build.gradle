@@ -46,6 +46,7 @@ configurations {
 }
 
 dependencies {
+    compile project(':logging')
     compile project(':virgin-core')
     compile project(':cache')
     compile("org.springframework.boot:spring-boot-starter")
