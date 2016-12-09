@@ -55,4 +55,9 @@ public class DefaultCacheClient implements CacheClient {
     public <K, V> void clear(CacheName cacheName) {
 
     }
+
+    @Override
+    public <K, V> void putAsync(K key, V value, CacheName cacheName) {
+
+    }
 }

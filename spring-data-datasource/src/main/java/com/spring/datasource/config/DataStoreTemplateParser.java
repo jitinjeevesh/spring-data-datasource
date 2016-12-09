@@ -16,14 +16,12 @@ public class DataStoreTemplateParser extends AbstractBeanDefinitionParser {
     protected String resolveId(Element element, AbstractBeanDefinition definition, ParserContext parserContext)
             throws BeanDefinitionStoreException {
 
-        System.out.println("...............resolveId ...DataStoreTemplateParser...................................");
         String id = super.resolveId(element, definition, parserContext);
         return StringUtils.hasText(id) ? id : BeanName.DATA_STORE_TEMPLATE_BEAN_NAME;
     }
 
     @Override
     protected AbstractBeanDefinition parseInternal(Element element, ParserContext parserContext) {
-        System.out.println("................Inside parsing DataStoreTemplateParser..............................");
         BeanComponentDefinitionBuilder helper = new BeanComponentDefinitionBuilder(element, parserContext);
 
         BeanDefinitionBuilder datasourceDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(DataStoreTemplate.class);

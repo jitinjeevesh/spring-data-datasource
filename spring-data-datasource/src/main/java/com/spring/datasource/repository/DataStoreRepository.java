@@ -11,4 +11,6 @@ import java.util.List;
 public interface DataStoreRepository<T, ID extends Serializable> extends PagingAndSortingRepository<T, ID> {
 
     List<T> findAll();
+
+    List<T> findAll(Integer limit);
 }

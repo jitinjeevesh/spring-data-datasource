@@ -1,21 +1,20 @@
 package com.virgin;
 
 import com.spring.datasource.repository.config.EnableDataStoreRepositories;
+import com.virgin.util.CSVWriter;
+import com.virgin.cache.CacheService;
 import com.virgin.config.Cache;
-import com.virgin.config.CacheName;
-import com.virgin.domain.MasterBrand;
-import com.virgin.domain.Settings;
-import com.virgin.mapping.VirginRedUser;
+import com.virgin.domain.*;
+import com.virgin.mapping.VCOPointsInfoCache;
+import com.virgin.mapping.VirginRedUserDetailCache;
 import com.virgin.repository.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
-import java.util.List;
+import java.util.*;
 
 @SpringBootApplication
 @EnableDataStoreRepositories
@@ -31,33 +30,81 @@ public class Application {
     @Autowired
     private MasterBrandRepository masterBrandRepository;
     @Autowired
+    private UserBrandInfoRepository userBrandInfoRepository;
+    @Autowired
     private VcoValidationInfoRepository vcoValidationInfoRepository;
 
     @Autowired
-    private Cache<Long, VirginRedUser> virginRedUserCache;
+    private Cache<Long, VirginRedUserDetailCache> virginRedUserCache;
+
+    @Autowired
+    private Cache<String, Map<String, Set<VirginRedUserDetailCache>>> userBrandCache;
+
+    @Autowired
+    private Cache<Long, VCOPointsInfoCache> pointsInfoCache;
+
+    @Autowired
+    private VCOPointsInfoRepository vcoPointsInfoRepository;
+
+    @Autowired
+    private CacheService cacheService;
+
+   /* @Bean
+    Mapper getMapper() {
+        return new DozerBeanMapper();
+    }*/
 
     public static void main(String[] args) throws InterruptedException {
-        ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
+        SpringApplication springApplication = new SpringApplication(Application.class);
+        springApplication.setWebEnvironment(false);
+        ConfigurableApplicationContext context = springApplication.run(args);
+//        ConfigurableApplicationContext context = SpringApplication.run(Application.class, args);
         Application mainObj = context.getBean(Application.class);
         mainObj.init();
+//        context.close();
+//        System.exit(0);
+    }
+
+    @FunctionalInterface
+    public interface TimeCalculate {
+        public void execute();
+    }
+
+    public void calculateTime(TimeCalculate timeCalculate) {
+        Date start = new Date();
+        timeCalculate.execute();
+        Date end = new Date();
+        System.out.println("..................................Total time taken..................................");
+        System.out.println(end.getTime() - start.getTime());
     }
 
     public void init() {
-//        List<Settings> settingses = settingsRepository.findAllByDefaultValueAndEnvironment(true, "PROD");
+        Date date = new Date(System.currentTimeMillis() - 24 * 60 * 60 * 1000);
+        List<TestKind> testKinds = testKindRepository.findAllByCurrentDateLessThan(new Date());
+        System.out.println(testKinds);
+        System.out.println(testKinds.size());
+        new CSVWriter().writeToCSV(testKinds);
+//        List<Settings> settingses = settingsRepository.findAllByEnvironment("PROD");
 //        System.out.println(settingses);
-//        vcoValidationInfoRepository.findAllByValidationResult("VALIDATED");
+      /*  List<VCOPointsInfo> vcoPointsInfos = vcoPointsInfoRepository.findAll();
+        System.out.println(vcoPointsInfos);
+        System.out.println(vcoPointsInfos.size());*/
+//        userBrandCache.clear(CacheName.DEFAULT);
+//        calculateTime(cacheService::populateCache);
 
-        VirginRedUser virginRedUser = new VirginRedUser();
-        virginRedUser.setFirstName("Jeevesh");
-        virginRedUserCache.put(1l, virginRedUser, CacheName.USER_CACHE);
-
-        VirginRedUser virginRedUser1 = virginRedUserCache.get(1l, CacheName.USER_CACHE);
-        System.out.println(virginRedUser1);
-
-        System.out.println(virginRedUserCache.count(CacheName.USER_CACHE));
-        System.out.println(virginRedUserCache.all(CacheName.USER_CACHE));
-        System.out.println(virginRedUserCache.keySet(CacheName.USER_CACHE));
-        System.out.println(virginRedUserCache.values(CacheName.USER_CACHE));
+//        pointsInfoCache.all(CacheName.POINTS_INFO_CACHE).values();
+        /*Map<String, Map<String, Set<VirginRedUserDetailCache>>> map = userBrandCache.all(CacheName.POINTS_INFO_CACHE);
+        System.out.println(map.keySet());
+        System.out.println(map.values().size());
+        for (String s : map.keySet()) {
+            System.out.println(s);
+            System.out.println(map.get(s).keySet());
+            System.out.println(map.get(s).values().size());
+        }*/
+//        Set<VirginRedUserDetailCache> map1 = map.get("Virgin Trains").get("VALIDATED");
+//        System.out.println(map1.size());
+//        System.out.println(map.get("Virgin Atlantic").keySet());
+//        System.out.println(map.get("Virgin Atlantic").values());
 
         //TODO:Dynamic Query
 //        System.out.println(settingsRepository.findByFeature("STRIPE"));
@@ -82,7 +129,7 @@ public class Application {
         System.out.println(virginRedUser);*/
 
         //TODO:Test updating Kind
-       /* ContactInfo contactInfo = new ContactInfo();
+        /*ContactInfo contactInfo = new ContactInfo();
         contactInfo.setCity("Lucknow");
         contactInfo.setCountry("India");
         TestKind testKind = new TestKind();

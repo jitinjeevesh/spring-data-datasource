@@ -51,6 +51,7 @@ public abstract class DataStoreConverters {
         converters.add(BooleanValueToObjectConverter.INSTANCE);
         converters.add(StringValueToObjectConverter.INSTANCE);
         converters.add(DoubleValueToObjectConverter.INSTANCE);
+        converters.add(LongValueToStringConverter.INSTANCE);
         return converters;
     }
 
@@ -206,6 +207,16 @@ public abstract class DataStoreConverters {
             return source.get();
         }
     }
+
+    public static enum LongValueToStringConverter implements Converter<LongValue, String> {
+        INSTANCE;
+
+        @Override
+        public String convert(LongValue source) {
+            return String.valueOf(source.get());
+        }
+    }
+
 
     public static enum BooleanValueToBooleanConverter implements Converter<BooleanValue, Boolean> {
         INSTANCE;

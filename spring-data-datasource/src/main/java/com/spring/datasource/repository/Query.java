@@ -19,4 +19,5 @@ public @interface Query {
     boolean delete() default false;
 
     boolean allowLiteral() default false;
+
 }

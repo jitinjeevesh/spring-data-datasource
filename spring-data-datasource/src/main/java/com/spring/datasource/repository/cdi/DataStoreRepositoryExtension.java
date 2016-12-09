@@ -25,12 +25,10 @@ public class DataStoreRepositoryExtension extends CdiRepositoryExtensionSupport 
     private final Map<Set<Annotation>, Bean<DataStoreOperation>> dataStoreEntityManager = new HashMap<Set<Annotation>, Bean<DataStoreOperation>>();
 
     public DataStoreRepositoryExtension() {
-        System.out.println(".........................................................................");
         LOG.info("Activating CDI extension for Spring Data DataStore repositories.");
     }
 
     <X> void processBean(@Observes ProcessBean<X> processBean) {
-        System.out.println("...............Inside process bean.........................");
         Bean<X> bean = processBean.getBean();
         for (Type type : bean.getTypes()) {
             // Check if the bean is an DataStoreOperation.
@@ -51,7 +49,6 @@ public class DataStoreRepositoryExtension extends CdiRepositoryExtensionSupport 
     }
 
     void afterBeanDiscovery(@Observes AfterBeanDiscovery afterBeanDiscovery, BeanManager beanManager) {
-        System.out.println("...............After bean discovery.........................");
         for (Map.Entry<Class<?>, Set<Annotation>> entry : getRepositoryTypes()) {
             Class<?> repositoryType = entry.getKey();
             Set<Annotation> qualifiers = entry.getValue();

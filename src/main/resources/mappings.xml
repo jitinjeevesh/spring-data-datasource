@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mappings xmlns="http://dozer.sourceforge.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://dozer.sourceforge.net
+          http://dozer.sourceforge.net/schema/beanmapping.xsd">
+
+    <configuration>
+        <date-format>yyyy-MM-dd'T'HH:mm:ss'Z'</date-format>
+    </configuration>
+
+    <mapping>
+        <class-a>com.virgin.domain.VCOPointsInfo</class-a>
+        <class-b>com.virgin.mapping.VCOPointsInfoCache</class-b>
+    </mapping>
+
+</mappings>

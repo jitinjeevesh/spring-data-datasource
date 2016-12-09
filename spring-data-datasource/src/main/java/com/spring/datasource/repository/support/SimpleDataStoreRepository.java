@@ -60,7 +60,7 @@ public class SimpleDataStoreRepository<T, ID extends Serializable> implements Da
         if (dataStoreEntityInformation.isNew(entity)) {
             dataStoreOperation.insert(entity, getKindClass());
         } else {
-            dataStoreOperation.save(entity,getKindClass());
+            dataStoreOperation.save(entity, getKindClass());
         }
         return null;
     }
@@ -78,6 +78,11 @@ public class SimpleDataStoreRepository<T, ID extends Serializable> implements Da
     @Override
     public List<T> findAll() {
         return dataStoreOperation.findAll(getKindClass());
+    }
+
+    @Override
+    public List<T> findAll(Integer limit) {
+        return dataStoreOperation.findAll(getKindClass(),limit);
     }
 
     @Override

@@ -2,8 +2,8 @@ spring:
   data:
       datasource:
         connection: default
-        projectId:  virgin-red-test
-        jsonFile: virgin-red-test-cff5a3523ca6.json
+        projectId:  virgin-red-prod
+        jsonFile: virgin-red-prod-915810871cdd.json
 server:
   port: 8090
 

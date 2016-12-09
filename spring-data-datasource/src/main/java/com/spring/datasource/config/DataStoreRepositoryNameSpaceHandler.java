@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 public class DataStoreRepositoryNameSpaceHandler extends NamespaceHandlerSupport {
 
     public void init() {
-        System.out.println("..............Inside init.........................................");
         registerBeanDefinitionParser("template", new DataStoreTemplateParser());
         RepositoryConfigurationExtension extension = new DataStoreRepositoryConfigExtension();
         RepositoryBeanDefinitionParser repositoryBeanDefinitionParser = new RepositoryBeanDefinitionParser(extension);

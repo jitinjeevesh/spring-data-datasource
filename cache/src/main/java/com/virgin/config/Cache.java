@@ -14,6 +14,8 @@ public interface Cache<K, V> {
 
     void put(K key, V value, CacheName cacheName);
 
+    void putAsync(K key, V value, CacheName cacheName);
+
     long count(CacheName cacheName);
 
     Map<K, V> all(CacheName cacheName);

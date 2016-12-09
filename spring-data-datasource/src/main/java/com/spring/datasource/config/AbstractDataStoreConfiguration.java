@@ -43,8 +43,6 @@ public abstract class AbstractDataStoreConfiguration {
     @Bean
     public DataStoreMappingContext dataStoreMappingContext() throws ClassNotFoundException {
         LOG.info("Creating Bean for : DataStoreMappingContext");
-        System.out.println("..........................................................................");
-        System.out.println(getInitialEntitySet());
         DataStoreMappingContext mappingContext = new DataStoreMappingContext();
         mappingContext.setInitialEntitySet(getInitialEntitySet());
 //        mappingContext.setSimpleTypeHolder(customConversions().getSimpleTypeHolder());

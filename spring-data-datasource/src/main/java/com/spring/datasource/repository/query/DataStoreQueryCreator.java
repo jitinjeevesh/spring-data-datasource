@@ -13,6 +13,7 @@ import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.util.Assert;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 public class DataStoreQueryCreator extends AbstractDataStoreQueryCreator<DynamicQuery, Criteria> {
@@ -29,7 +30,6 @@ public class DataStoreQueryCreator extends AbstractDataStoreQueryCreator<Dynamic
 
     @Override
     protected Criteria create(Part part, Iterator<Object> iterator) {
-        System.out.println("Inside create block.......................");
         PersistentPropertyPath<DataStorePersistentProperty> path = context.getPersistentPropertyPath(part.getProperty());
         DataStorePersistentProperty property = path.getLeafProperty();
         Criteria criteria = from(part, property, Criteria.where(path.toDotPath()), iterator);
@@ -38,9 +38,7 @@ public class DataStoreQueryCreator extends AbstractDataStoreQueryCreator<Dynamic
 
     @Override
     protected Criteria and(Part part, Criteria base, Iterator<Object> iterator) {
-        System.out.println(".............>>Inside and block................");
         if (base == null) {
-            System.out.println("Base is null");
             return create(part, iterator);
         }
         PersistentPropertyPath<DataStorePersistentProperty> path = context.getPersistentPropertyPath(part.getProperty());
@@ -50,7 +48,6 @@ public class DataStoreQueryCreator extends AbstractDataStoreQueryCreator<Dynamic
 
     @Override
     protected Criteria or(Criteria base, Criteria criteria) {
-        System.out.println(".............>>Inside or block................");
 //        Criteria result = new Criteria();
 //        return result.orOperator(base, criteria);
         return null;
@@ -58,7 +55,6 @@ public class DataStoreQueryCreator extends AbstractDataStoreQueryCreator<Dynamic
 
     @Override
     protected DynamicQuery complete(Criteria criteria, Sort sort) {
-        System.out.println(".......................Inside complete block.........");
         DynamicQuery dynamicQuery = (criteria == null ? new DynamicQuery() : new DynamicQuery(criteria)).with(sort);
         return dynamicQuery;
     }
@@ -67,15 +63,26 @@ public class DataStoreQueryCreator extends AbstractDataStoreQueryCreator<Dynamic
         Part.Type type = part.getType();
         switch (type) {
             case SIMPLE_PROPERTY:
-                System.out.println("Is simple comparision possible");
-                System.out.println(isSimpleComparisionPossible(part));
                 Object o = parameters.next();
-                System.out.println(o);
-                System.out.println(property.getFieldName());
                 return criteria.is(o);
+            case IN:
+                return criteria.in(nextAsArray(parameters));
             default:
                 throw new IllegalArgumentException("Unsupported query type");
         }
+    }
+
+    private Object[] nextAsArray(Iterator<Object> iterator) {
+
+        Object next = iterator.next();
+
+        if (next instanceof Collection) {
+            return ((Collection<?>) next).toArray();
+        } else if (next != null && next.getClass().isArray()) {
+            return (Object[]) next;
+        }
+
+        return new Object[]{next};
     }
 
     private boolean isSimpleComparisionPossible(Part part) {

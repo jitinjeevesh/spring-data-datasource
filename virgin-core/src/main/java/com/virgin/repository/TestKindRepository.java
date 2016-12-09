@@ -4,6 +4,7 @@ import com.spring.datasource.repository.DataStoreRepository;
 import com.spring.datasource.repository.Query;
 import com.virgin.domain.TestKind;
 
+import java.util.Date;
 import java.util.List;
 
 public interface TestKindRepository extends DataStoreRepository<TestKind, Long> {
@@ -15,6 +16,9 @@ public interface TestKindRepository extends DataStoreRepository<TestKind, Long> 
     TestKind updateByName(Long id, String name);
 
     List<TestKind> findAllByName(String name);
+
+    @Query(value = "select * from TestKind where currentDate < @CurrentDate")
+    List<TestKind> findAllByCurrentDateLessThan(Date date);
     /* List<TestKind> findAllByName(String name);
 
     TestKind findByNameAndBooleanPremitive(String name, Boolean aBoolean);

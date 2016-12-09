@@ -45,8 +45,6 @@ public class DataStoreRepositoryBean<T> extends CdiRepositoryBean<T> {
 
     @Override
     protected T create(CreationalContext<T> creationalContext, Class<T> repositoryType, Object customImplementation) {
-        System.out.println(".......................Inside create repository bean.....................");
-        System.out.println(repositoryType);
         // Get an instance from the associated entity manager bean.
         DataStoreOperation dataStoreOperation = getDependencyInstance(operations, DataStoreOperation.class);
 

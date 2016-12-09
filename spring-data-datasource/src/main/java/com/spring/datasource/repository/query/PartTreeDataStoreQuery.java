@@ -21,9 +21,6 @@ public class PartTreeDataStoreQuery extends AbstractDataStoreQuery {
     protected DynamicQuery createQuery(DataStoreConvertingParameterAccessor accessor) {
         DataStoreQueryCreator dataStoreQueryCreator = new DataStoreQueryCreator(tree, accessor, context);
         DynamicQuery dynamicQuery = dataStoreQueryCreator.createQuery();
-        System.out.println("........................Inside create query....................................");
-        System.out.println(dynamicQuery.getParameterBindings());
-        System.out.println(dynamicQuery.getCriteria());
         if (tree.isLimiting()) {
             dynamicQuery.limit(tree.getMaxResults());
         }

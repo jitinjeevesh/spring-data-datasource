@@ -10,6 +10,8 @@ public interface CriteriaDefinition {
 
     Object getValue();
 
+    String getKeyWord();
+
     Filter getCriteriaFilter();
 
     List<Criteria.ParameterBinding> getParameterBindings();

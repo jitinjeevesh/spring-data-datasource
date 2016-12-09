@@ -40,7 +40,6 @@ public class StringBasedDataStoreQuery extends AbstractDataStoreQuery {
     protected StringQuery createQuery(DataStoreConvertingParameterAccessor accessor) {
         StringQueryCreator stringQueryCreator = new StringQueryCreator(query, accessor, isAllowLiteral);
         StringQuery stringQuery = stringQueryCreator.createQuery();
-        System.out.println(stringQuery.getQuery());
         return stringQuery;
     }
 

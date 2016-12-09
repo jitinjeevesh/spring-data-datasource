@@ -12,10 +12,12 @@ public class NamedBindingQuery implements StringQuery {
 
     private final Map<String, Object> criteria = new LinkedHashMap<String, Object>();
     private final String query;
+    private final String actualQuery;
     private final DataStoreConvertingParameterAccessor accessor;
 
     public NamedBindingQuery(String query, DataStoreConvertingParameterAccessor accessor) {
         this.accessor = accessor;
+        this.actualQuery = query;
         this.query = generateQuery(query);
     }
 
@@ -48,7 +50,16 @@ public class NamedBindingQuery implements StringQuery {
         return sb.toString();
     }
 
+    public Map<String, Object> getCriteria() {
+        return criteria;
+    }
+
     public String getQuery() {
         return this.query;
+    }
+
+    @Override
+    public String getOriginalQuery() {
+        return actualQuery;
     }
 }

@@ -93,4 +93,15 @@ public class UserBrandInfo extends AbstractLongEntity {
     public void setSegmentValue(String segmentValue) {
         this.segmentValue = segmentValue;
     }
+
+    @Override
+    public String toString() {
+        return "UserBrandInfo{" +
+                "userId=" + userId +
+                ", brandId=" + brandId +
+                ", currentApplicableStatus=" + currentApplicableStatus +
+                ", currentStatus='" + currentStatus + '\'' +
+                ", brandName='" + brandName + '\'' +
+                '}';
+    }
 }

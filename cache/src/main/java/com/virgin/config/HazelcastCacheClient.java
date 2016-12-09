@@ -32,6 +32,12 @@ public class HazelcastCacheClient implements CacheClient {
     }
 
     @Override
+    public <K, V> void putAsync(K key, V value, CacheName cacheName) {
+        IMap<K, V> map = hazelcastInstance.getMap(cacheName.getValue());
+        map.putAsync(key, value);
+    }
+
+    @Override
     public <K, V> long count(CacheName cacheName) {
         IMap<K, V> map = hazelcastInstance.getMap(cacheName.getValue());
         return map.size();

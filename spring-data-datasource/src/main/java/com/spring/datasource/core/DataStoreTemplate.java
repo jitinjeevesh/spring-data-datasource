@@ -93,18 +93,19 @@ public class DataStoreTemplate implements DataStoreOperation {
     }
 
     //TODO:Refactor this code.
-    public <E> List<E> findAll(Class<E> entityClass) {
+    public <E> List<E> findAll(Class<E> entityClass, Integer limit) {
         List<E> entities = new ArrayList<>();
         try {
             boolean allRecords = false;
             Long totalCount = count(entityClass);
             String baseQuery = "SELECT * FROM " + determineCollectionName(entityClass) + " LIMIT @Limit";
             Map<String, Object> binding = new HashMap<String, Object>();
+            Date start = new Date();
             if (totalCount < 500) {
                 binding.put("Limit", totalCount);
                 allRecords = true;
             } else {
-                binding.put("Limit", 500);
+                binding.put("Limit", limit);
             }
             GqlQuery.Builder<Entity> queryBuilder = Query.newGqlQueryBuilder(Query.ResultType.ENTITY, baseQuery);
             applyNamedBindings(queryBuilder, binding);
@@ -118,6 +119,7 @@ public class DataStoreTemplate implements DataStoreOperation {
                 E convertedEntity = dataStoreConverter.read(entityClass, result);
                 entities.add(convertedEntity);
             }
+            Date end = new Date();
             dataStoreQueryResponse.setResults(entities);
             dataStoreQueryResponse.setEndCursor(results.getCursorAfter().toUrlSafe());
             List<E> tempList = new ArrayList<>();
@@ -126,7 +128,7 @@ public class DataStoreTemplate implements DataStoreOperation {
                     tempList.clear();
                     String query = baseQuery + " OFFSET @Offset";
                     GqlQuery.Builder<Entity> queryBuilder1 = Query.newGqlQueryBuilder(Query.ResultType.ENTITY, query);
-                    queryBuilder1.setBinding("Limit", 500);
+                    queryBuilder1.setBinding("Limit", limit);
                     queryBuilder1.setBinding("Offset", results.getCursorAfter());
                     GqlQuery<Entity> gqlQuery1 = queryBuilder1.build();
                     results = datastore.run(gqlQuery1);
@@ -136,12 +138,18 @@ public class DataStoreTemplate implements DataStoreOperation {
                         entities.add(convertedEntity);
                         tempList.add(convertedEntity);
                     }
+                    Date end1 = new Date();
                 } while (!tempList.isEmpty());
             }
         } catch (DatastoreException exp) {
             exp.printStackTrace();
         }
         return entities;
+    }
+
+    @Override
+    public <E> List<E> findAll(Class<E> entityClass) {
+        return findAll(entityClass, 500);
     }
 
     //TODO:Sort is not implemented yet.
@@ -161,13 +169,60 @@ public class DataStoreTemplate implements DataStoreOperation {
     public <E> List<E> findAll(DataStoreQuery dataStoreQuery, Pageable pageable, Class<E> type, String kindName) {
         if (dataStoreQuery instanceof DynamicQuery) {
             return doFind(((DynamicQuery) dataStoreQuery).with(pageable), type, kindName);
+        } else if (dataStoreQuery instanceof StringQuery) {
+            return doFind(((StringQuery) dataStoreQuery), type, kindName);
         } else {
             throw new InvalidDataAccessApiUsageException("No other query method defined");
         }
     }
 
+    private <E> List<E> doFind(StringQuery dynamicQuery, Class<E> type, String kindName) {
+        int limit = 1000;
+        List<E> entities = new ArrayList<>();
+        try {
+            String baseQuery = dynamicQuery.getOriginalQuery() + " LIMIT @Limit";
+            Map<String, Object> binding = dynamicQuery.getCriteria();
+            binding.put("Limit", limit);
+            System.out.println(binding);
+            GqlQuery.Builder<Entity> queryBuilder = Query.newGqlQueryBuilder(Query.ResultType.ENTITY, baseQuery);
+            applyNamedBindings(queryBuilder, binding);
+            queryBuilder.setAllowLiteral(false);
+            GqlQuery<Entity> gqlQuery = queryBuilder.build();
+            System.out.println(gqlQuery);
+            QueryResults<Entity> results = datastore.run(gqlQuery);
+            DataStoreQueryResponseImpl<E> dataStoreQueryResponse = new DataStoreQueryResponseImpl<E>();
+            dataStoreQueryResponse.setStartCursor(results.getCursorAfter().toUrlSafe());
+            while (results.hasNext()) {
+                Entity result = results.next();
+                E convertedEntity = dataStoreConverter.read(type, result);
+                entities.add(convertedEntity);
+            }
+            dataStoreQueryResponse.setResults(entities);
+            dataStoreQueryResponse.setEndCursor(results.getCursorAfter().toUrlSafe());
+            List<E> tempList = new ArrayList<>();
+            do {
+                tempList.clear();
+                String query = baseQuery + " OFFSET @Offset";
+                GqlQuery.Builder<Entity> queryBuilder1 = Query.newGqlQueryBuilder(Query.ResultType.ENTITY, query);
+                binding.put("Offset", results.getCursorAfter());
+                applyNamedBindings(queryBuilder1, binding);
+                GqlQuery<Entity> gqlQuery1 = queryBuilder1.build();
+                results = datastore.run(gqlQuery1);
+                while (results.hasNext()) {
+                    Entity result = results.next();
+                    E convertedEntity = dataStoreConverter.read(type, result);
+                    entities.add(convertedEntity);
+                    tempList.add(convertedEntity);
+                }
+            } while (!tempList.isEmpty());
+        } catch (DatastoreException exp) {
+            exp.printStackTrace();
+        }
+        return entities;
+    }
+
     private <E> List<E> doFind(DynamicQuery dynamicQuery, Class<E> type, String kindName) {
-        int limit = dynamicQuery.getLimit() < 0 ? dynamicQuery.getLimit() : 500;
+        int limit = dynamicQuery.getLimit() < 0 ? dynamicQuery.getLimit() : 5000;
         int offset = dynamicQuery.getOffset() < 0 ? dynamicQuery.getOffset() : 0;
         List<Criteria.ParameterBinding> parameterBindings = dynamicQuery.getParameterBindings();
         StringBuilder stringBuffer = new StringBuilder("SELECT * FROM " + kindName + " where ");
@@ -178,7 +233,6 @@ public class DataStoreTemplate implements DataStoreOperation {
         String finalQuery = stringQuery.substring(0, stringQuery.lastIndexOf("AND "));
         List<E> entities = new ArrayList<>();
         try {
-            boolean allRecords = false;
             String baseQuery = finalQuery + " LIMIT @Limit";
             Map<String, Object> binding = new HashMap<String, Object>();
             binding.put("Limit", limit);
@@ -324,6 +378,9 @@ public class DataStoreTemplate implements DataStoreOperation {
         if (namedBindings != null) {
             for (String bindingName : namedBindings.keySet()) {
                 Object bindingValue = namedBindings.get(bindingName);
+                if (bindingName.contains("@")) {
+                    bindingName = bindingName.replace("@", "");
+                }
                 if (bindingValue instanceof Short) {
                     queryBuilder.setBinding(bindingName, (short) bindingValue);
                 } else if (bindingValue instanceof Integer) {
@@ -339,6 +396,9 @@ public class DataStoreTemplate implements DataStoreOperation {
                 } else if (boolean.class.isAssignableFrom(bindingValue.getClass())) {
                     queryBuilder.setBinding(bindingName, (boolean) bindingValue);
                 } else if (bindingValue instanceof String) {
+                    if (((String) bindingValue).contains("'")) {
+                        bindingValue = ((String) bindingValue).replace("'", "");
+                    }
                     queryBuilder.setBinding(bindingName, (String) bindingValue);
                 } else if (bindingValue instanceof Calendar) {
                     queryBuilder.setBinding(bindingName, DateTime.copyFrom((Calendar) bindingValue));

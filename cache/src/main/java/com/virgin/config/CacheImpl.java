@@ -41,6 +41,11 @@ public class CacheImpl<K, V> implements Cache<K, V>, InitializingBean {
     }
 
     @Override
+    public void putAsync(K key, V value, CacheName cacheName) {
+        cacheClient.putAsync(key, value, cacheName);
+    }
+
+    @Override
     public long count(CacheName cacheName) {
         return cacheClient.count(cacheName);
     }

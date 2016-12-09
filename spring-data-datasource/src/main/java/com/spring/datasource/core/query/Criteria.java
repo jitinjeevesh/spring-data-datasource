@@ -7,9 +7,7 @@ import com.spring.datasource.core.convert.DataStoreMapperFactory;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 public class Criteria implements CriteriaDefinition {
 
@@ -19,6 +17,7 @@ public class Criteria implements CriteriaDefinition {
     private List<Criteria> criteriaChain;
     private LinkedHashMap<String, Object> criteria = new LinkedHashMap<String, Object>();
     private Object isValue = NOT_SET;
+    private String keyWord = "AND";
     protected DataStoreMapperFactory dataStoreMapperFactory;
 
     {
@@ -59,16 +58,28 @@ public class Criteria implements CriteriaDefinition {
         return this.isValue;
     }
 
+    public String getKeyWord() {
+        return keyWord;
+    }
+
     public Criteria is(Object o) {
-        System.out.println("Criteria sets with object" + o);
         if (!isValue.equals(NOT_SET)) {
             throw new InvalidDataAccessApiUsageException("Multiple 'is' values declared. You need to use 'and' with multiple criteria");
         }
         /*if (lastOperatorWasNot()) {
             throw new InvalidDataAccessApiUsageException("Invalid query: 'not' can't be used with 'is' - use 'ne' instead.");
         }*/
-        System.out.println("...............Inside is criteria.............................");
         this.isValue = o;
+        return this;
+    }
+
+    public Criteria in(Object... o) {
+        if (o.length > 1 && o[1] instanceof Collection) {
+            throw new InvalidDataAccessApiUsageException("You can only pass in one argument of type " + o[1].getClass().getName());
+        }
+        criteria.put("in", Arrays.asList(o));
+        this.keyWord = "IN";
+        this.isValue = Arrays.asList(o);
         return this;
     }
 
@@ -99,12 +110,20 @@ public class Criteria implements CriteriaDefinition {
         return propertyFilter;
     }
 
+    @SuppressWarnings("unchecked")
     public List<ParameterBinding> getParameterBindings() {
         List<ParameterBinding> propertyFilters = new ArrayList<ParameterBinding>();
         for (Criteria criteria : criteriaChain) {
             if (criteria.getKey().equalsIgnoreCase("id"))
                 continue;
-            propertyFilters.add(criteria.getSingleParameterBinding());
+            if (criteria.getKeyWord().equalsIgnoreCase("IN")) {
+                List<Object> objectList = (List<Object>) criteria.getValue();
+                for (int i = 0; i < objectList.size(); i++) {
+                    propertyFilters.add(new ParameterBinding(0, criteria.getKey() + i, objectList.get(0), criteria.getKeyWord()));
+                }
+            } else {
+                propertyFilters.add(criteria.getSingleParameterBinding());
+            }
         }
         return propertyFilters;
     }
@@ -119,7 +138,7 @@ public class Criteria implements CriteriaDefinition {
     }
 
     protected ParameterBinding getSingleParameterBinding() {
-        return new ParameterBinding(0, this.key, this.isValue);
+        return new ParameterBinding(0, this.key, this.isValue, this.keyWord);
     }
 
     public static class ParameterBinding {
@@ -127,9 +146,11 @@ public class Criteria implements CriteriaDefinition {
         private final int parameterIndex;
         private final String name;
         private final Object value;
+        private final String keyWord;
 
-        public ParameterBinding(int parameterIndex, String name, Object value) {
+        public ParameterBinding(int parameterIndex, String name, Object value, String keyWord) {
             this.parameterIndex = parameterIndex;
+            this.keyWord = keyWord;
             this.name = name;
             this.value = value;
         }
@@ -144,6 +165,10 @@ public class Criteria implements CriteriaDefinition {
 
         public Object getValue() {
             return value;
+        }
+
+        public String getKeyWord() {
+            return keyWord;
         }
     }
 }

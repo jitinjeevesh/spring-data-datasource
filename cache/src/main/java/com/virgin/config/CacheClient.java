@@ -23,4 +23,6 @@ public interface CacheClient {
     <K, V> void delete(K key, CacheName cacheName);
 
     <K, V> void clear(CacheName cacheName);
+
+    <K,V >void putAsync(K key, V value, CacheName cacheName);
 }

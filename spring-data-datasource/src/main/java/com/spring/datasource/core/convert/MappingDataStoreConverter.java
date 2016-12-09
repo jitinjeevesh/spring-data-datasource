@@ -131,9 +131,9 @@ public class MappingDataStoreConverter extends AbstractDataStoreConverter {
         TypeInformation<? extends R> typeToUse = dataStoreTypeMapper.readType(source, typeInformation);
 
         Class<? extends R> rawType = typeToUse.getType();
-        if (Entity.class.isAssignableFrom(rawType)) {
+       /* if (Entity.class.isAssignableFrom(rawType)) {
             System.out.println(source);
-        }
+        }*/
         final DataStorePersistentEntity<R> persistentEntity = (DataStorePersistentEntity<R>) mappingContext.getPersistentEntity(typeToUse);
         final DefaultSpELExpressionEvaluator evaluator = new DefaultSpELExpressionEvaluator(source, spELContext);
 

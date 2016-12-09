@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface VcoValidationInfoRepository extends DataStoreRepository<VcoValidationInfo, Long> {
 
-    List<VcoValidationInfo> findAllByValidationResult(String validationResult);
+    VcoValidationInfo findByUserIdAndBrandName(Long userId, String brandName);
 }

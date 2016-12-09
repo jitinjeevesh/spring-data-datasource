@@ -18,6 +18,8 @@ public interface DataStoreOperation {
 
     <E> List<E> findAll(Class<E> entityClass);
 
+    <E> List<E> findAll(Class<E> entityClass, Integer limit);
+
     <E> List<E> findAll(Class<E> entityClass, Pageable pageable);
 
     DataStoreConverter getConverter();

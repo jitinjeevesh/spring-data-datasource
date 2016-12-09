@@ -1,11 +1,12 @@
-package com.virgin.domain;
+package com.virgin.mapping;
 
-import com.spring.datasource.core.mapping.Kind;
-import com.virgin.baseentity.AbstractLongEntity;
+import java.io.Serializable;
 
-@Kind
-public class VCOPointsInfo extends AbstractLongEntity {
+public class VCOPointsInfoCache implements Serializable {
 
+    private static final long serialVersionUID = -1l;
+
+    private Long id;
     private Long brandId;
     private String brandName;
     private String status;
@@ -13,6 +14,14 @@ public class VCOPointsInfo extends AbstractLongEntity {
     private Integer validationPoints;
     private Boolean isValidatable = false;
 
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Long getBrandId() {
         return brandId;
@@ -60,13 +69,5 @@ public class VCOPointsInfo extends AbstractLongEntity {
 
     public void setIsValidatable(Boolean isValidatable) {
         this.isValidatable = isValidatable;
-    }
-
-    @Override
-    public String toString() {
-        return "VCOPointsInfo{" +
-                "brandId=" + brandId +
-                ", brandName='" + brandName + '\'' +
-                '}';
     }
 }

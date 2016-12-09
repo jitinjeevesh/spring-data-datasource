@@ -38,8 +38,6 @@ public abstract class AbstractDataStoreQuery implements RepositoryQuery {
 
     //TODO:Implement all queries.
     private DataStoreQueryExecution getExecutionToWrap(DataStoreQuery dynamicQuery, DataStoreParameterAccessor accessor) {
-        System.out.println("..........................Check for collection query................................................");
-        System.out.println(method.isCollectionQuery());
         if (method.isCollectionQuery()) {
             return new DataStoreQueryExecution.CollectionExecution(operations, accessor.getPageable());
         } else if (isUpdateQuery()) {

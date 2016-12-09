@@ -2,6 +2,8 @@ package com.spring.datasource.core.query;
 
 import com.spring.datasource.repository.query.DataStoreConvertingParameterAccessor;
 
+import java.util.Map;
+
 public class LiteralQuery implements StringQuery {
 
     private final String query;
@@ -15,5 +17,15 @@ public class LiteralQuery implements StringQuery {
     @Override
     public String getQuery() {
         return query;
+    }
+
+    @Override
+    public String getOriginalQuery() {
+        return query;
+    }
+
+    @Override
+    public Map<String, Object> getCriteria() {
+        return null;
     }
 }

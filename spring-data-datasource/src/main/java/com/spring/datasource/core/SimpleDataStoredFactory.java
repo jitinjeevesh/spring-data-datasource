@@ -7,10 +7,10 @@ import com.spring.datasource.core.convert.DataStoreUtil;
 import com.spring.datasource.core.exception.DataStoreEntityManagerFactoryException;
 import org.springframework.util.Assert;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.URL;
-import java.util.Objects;
-import java.util.Scanner;
 
 /**
  * A factory class for producing {@link Datastore}s.
@@ -29,7 +29,7 @@ public class SimpleDataStoredFactory implements DataStoreFactory {
         if (dataStoreConfig.getConnection().equalsIgnoreCase("file")) {
             ClassLoader classLoader = getClass().getClassLoader();
             URL url = classLoader.getResource(dataStoreConfig.getJsonFile());
-            Assert.notNull(url, "Data store credential file must not be null");
+            Assert.notNull(url, "Data store credential file must not be nullls");
             File file = new File(url.getFile());
             return createEntityManager(dataStoreConfig.getProjectId(), file, dataStoreConfig.getNamespace());
         } else {
